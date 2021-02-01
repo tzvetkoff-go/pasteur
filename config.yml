@@ -1,0 +1,85 @@
+---
+# Logger configuration.
+logger:
+  # Logger output.
+  #
+  # Value: stdout | stderr | /path/to/file
+  output: stdout
+
+  # Logging level.
+  #
+  # Value: emerg | alert | crit | error | warning | notice | info | debug
+  level: info
+
+# Database configuration.
+db:
+  # Storage type.
+  #
+  # Value: filesystem | sql
+  storage: filesystem
+
+  # FileSystem DB configuration.
+  filesystem:
+    # Root path
+    #
+    # Value: /path/to/dir
+    root: ./db
+
+  # SQL DB configuration.
+  sql:
+    # Driver
+    #
+    # Value: sqlite3
+    driver: sqlite3
+
+    # DSN
+    #
+    # Value: string
+    dsn: ./db.sqlite3
+
+# Hasher configuration.
+hasher:
+  # Alphabet.
+  #
+  # Value: string
+  alphabet: 0123456789abcdef
+  # Salt.
+  #
+  # Value: string
+  salt: No paste on Sunday. No blasted pastes today! No, sir. Not one single bloody paste. Not one!
+  # Minimal hash length.
+  #
+  # Value: uint
+  min-length: 8
+
+# WebServer configuration.
+webserver:
+  # Static assets path on disk.
+  #
+  # Value: embedded | /path/to/dir
+  static-path: ./pkg/webserver/static
+
+  # Template files path on disk.
+  #
+  # Value: embedded | /path/to/dir
+  templates-path: ./pkg/webserver/templates
+
+  # Listen address.
+  #
+  # Value: host:port
+  listen-address: 0.0.0.0:1337
+
+  # Proxy header.
+  #
+  # Value: string
+  proxy-header:
+
+  # TLS certificate.
+  #
+  # Value: /path/to/file
+  tls-cert:
+
+  # TLS key.
+  #
+  # Value: /path/to/file
+  tls-key:

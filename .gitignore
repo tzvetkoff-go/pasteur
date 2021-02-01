@@ -1,0 +1,7 @@
+/pasteur
+/node_modules
+/pkg/webserver/static/assets/*.bundle.*
+/tmp
+/db/*
+/db.sqlite3*
+!.keep
