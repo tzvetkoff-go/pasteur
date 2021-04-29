@@ -99,8 +99,8 @@ func New(wsConfig *config.WebServer) (*WebServer, error) {
 	app.Use(httplib.ErrorRecoverer())
 
 	app.Get("/", httplib.Timeout(result.Index, 10*time.Second))
-	app.Get("/p/:id", httplib.Timeout(result.Show, 10*time.Second))
 	app.Get("/p/:id.txt", httplib.Timeout(result.ShowRaw, 10*time.Second))
+	app.Get("/p/:id", httplib.Timeout(result.Show, 10*time.Second))
 	app.Post("/", httplib.Timeout(result.Create, 10*time.Second))
 
 	app.Get("/*", httplib.Timeout(filesystem.New(filesystem.Config{
