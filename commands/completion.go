@@ -10,7 +10,7 @@ import (
 // NewCompletionCommand ...
 func NewCompletionCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:    "completion",
+		Use:    "completion [shell]",
 		Short:  "Generates shell completion scripts",
 		Hidden: true,
 		RunE: func(cmd *cobra.Command, args []string) error {

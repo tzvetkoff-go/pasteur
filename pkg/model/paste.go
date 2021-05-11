@@ -39,11 +39,7 @@ func (p *Paste) Validate() error {
 		p.IndentSize = "4"
 	}
 	if p.MimeType == "" {
-		lang := enry.GetLanguage(p.Filename, []byte(p.Content))
-
-		println("foobar")
-		println(lang)
-		println("foobar")
+		lang, _ := enry.GetLanguageByContent(p.Filename, []byte(p.Content))
 
 		if lang != "" {
 			lang = strings.ToLower(lang)
