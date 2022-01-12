@@ -28,6 +28,11 @@ document.addEventListener('DOMContentLoaded', function() {
     theme: 'dark'
   });
 
+  // jQuery 3.6.0 fix
+  $(document).on('select2:open', function() {
+    document.querySelector('.select2-search__field', this).focus();
+  });
+
   // Code editor
   var codeEditor = document.getElementsByClassName('code-editor')[0];
   var codeMirror = CodeMirror.fromTextArea(codeEditor, {

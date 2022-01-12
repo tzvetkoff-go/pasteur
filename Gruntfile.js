@@ -210,14 +210,22 @@ var Modes = []Mode{
   ]);
 
   //
-  // Development build + watch
+  // Development build
   //
 
   grunt.registerTask('dev', [
     'go:generate',
     'concat:sass',
     'sass:dev',
-    'uglify:dev',
-    'watch'
+    'uglify:dev'
   ]);
+
+  //
+  // Development build + watch
+  //
+
+  grunt.registerTask('watch', [
+    'dev',
+    'watch'
+  ])
 };

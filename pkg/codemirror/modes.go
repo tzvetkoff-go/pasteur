@@ -71,7 +71,7 @@ var Modes = []Mode{
 		Name:       "Cobol",
 		Mode:       "cobol",
 		MimeTypes:  []string{"text/x-cobol"},
-		Extensions: []string{"cob", "cpy"},
+		Extensions: []string{"cob", "cpy", "cbl"},
 		Aliases:    []string{},
 	},
 	{
@@ -464,7 +464,7 @@ var Modes = []Mode{
 		Mode:       "julia",
 		MimeTypes:  []string{"text/x-julia"},
 		Extensions: []string{"jl"},
-		Aliases:    []string{},
+		Aliases:    []string{"jl"},
 	},
 	{
 		Name:       "Kotlin",
