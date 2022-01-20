@@ -47,12 +47,6 @@ type WebServer struct {
 	DB     db.DB          `inject:"DB"`
 }
 
-// Variables ...
-type Variables struct {
-	Paste     *model.Paste
-	Languages []codemirror.Mode
-}
-
 // New ...
 func New(wsConfig *config.WebServer) (*WebServer, error) {
 	result := &WebServer{
