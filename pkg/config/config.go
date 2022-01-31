@@ -52,12 +52,13 @@ type Hasher struct {
 
 // WebServer ...
 type WebServer struct {
-	StaticPath    string `yaml:"static-path"`
-	TemplatesPath string `yaml:"templates-path"`
-	ListenAddress string `yaml:"listen-address"`
-	ProxyHeader   string `yaml:"proxy-header"`
-	TLSCert       string `yaml:"tls-cert"`
-	TLSKey        string `yaml:"tls-key"`
+	StaticPath      string `yaml:"static-path"`
+	TemplatesPath   string `yaml:"templates-path"`
+	ListenAddress   string `yaml:"listen-address"`
+	ProxyHeader     string `yaml:"proxy-header"`
+	TLSCert         string `yaml:"tls-cert"`
+	TLSKey          string `yaml:"tls-key"`
+	RelativeURLRoot string `yaml:"relative-url-root"`
 }
 
 // LoadConfig ...

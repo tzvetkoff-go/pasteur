@@ -4,7 +4,6 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io/fs"
 	"net/http"
 	"os"
@@ -35,13 +34,13 @@ var TemplatesFSRoot embed.FS
 
 // WebServer ...
 type WebServer struct {
-	ListenAddress string
-	TLSCert       string
-	TLSKey        string
+	ListenAddress   string
+	TLSCert         string
+	TLSKey          string
+	RelativeURLRoot string
 
-	App             *fiber.App
-	Views           *html.Engine
-	DefaultTemplate *template.Template
+	App   *fiber.App
+	Views *html.Engine
 
 	Hasher *hasher.Hasher `inject:"Hasher"`
 	DB     db.DB          `inject:"DB"`
@@ -50,9 +49,10 @@ type WebServer struct {
 // New ...
 func New(wsConfig *config.WebServer) (*WebServer, error) {
 	result := &WebServer{
-		ListenAddress: wsConfig.ListenAddress,
-		TLSCert:       wsConfig.TLSCert,
-		TLSKey:        wsConfig.TLSKey,
+		ListenAddress:   wsConfig.ListenAddress,
+		TLSCert:         wsConfig.TLSCert,
+		TLSKey:          wsConfig.TLSKey,
+		RelativeURLRoot: strings.TrimRight(wsConfig.RelativeURLRoot, "/"),
 	}
 
 	var err error
@@ -92,14 +92,27 @@ func New(wsConfig *config.WebServer) (*WebServer, error) {
 	app.Use(httplib.RequestLogger())
 	app.Use(httplib.ErrorRecoverer())
 
-	app.Get("/", httplib.Timeout(result.Index, 10*time.Second))
-	app.Get("/p/:id.txt", httplib.Timeout(result.ShowRaw, 10*time.Second))
-	app.Get("/p/:id", httplib.Timeout(result.Show, 10*time.Second))
-	app.Post("/", httplib.Timeout(result.Create, 10*time.Second))
+	if result.RelativeURLRoot != "" {
+		app.Get("/", result.RedirectRoot)
+	}
 
-	app.Get("/*", httplib.Timeout(filesystem.New(filesystem.Config{
+	app.Get(result.RelativeURLRoot+"/", httplib.Timeout(result.Index, 10*time.Second))
+	app.Get(result.RelativeURLRoot+"/p/:id.txt", httplib.Timeout(result.ShowRaw, 10*time.Second))
+	app.Get(result.RelativeURLRoot+"/p/:id", httplib.Timeout(result.Show, 10*time.Second))
+	app.Post(result.RelativeURLRoot+"/", httplib.Timeout(result.Create, 10*time.Second))
+
+	fs := filesystem.New(filesystem.Config{
 		Root: http.FS(staticFS),
-	}), 10*time.Second))
+	})
+
+	if result.RelativeURLRoot != "" {
+		app.Get(result.RelativeURLRoot+"/*", func(c *fiber.Ctx) error {
+			c.Path(strings.TrimPrefix(c.Path(), result.RelativeURLRoot))
+			return fs(c)
+		})
+	} else {
+		app.Get(result.RelativeURLRoot+"/*", httplib.Timeout(fs, 10*time.Second))
+	}
 
 	app.Use(httplib.NotFoundHandler)
 
@@ -108,9 +121,15 @@ func New(wsConfig *config.WebServer) (*WebServer, error) {
 	return result, nil
 }
 
+// RedirectRoot ...
+func (ws *WebServer) RedirectRoot(c *fiber.Ctx) error {
+	return c.Redirect(ws.RelativeURLRoot, fiber.StatusFound)
+}
+
 // Index ...
 func (ws *WebServer) Index(c *fiber.Ctx) error {
 	return c.Render("default/page", fiber.Map{
+		"Root":      ws.RelativeURLRoot,
 		"Paste":     model.NewPaste(),
 		"Languages": codemirror.Modes,
 	}, "layout/layout")
@@ -132,6 +151,7 @@ func (ws *WebServer) Show(c *fiber.Ctx) error {
 	}
 
 	return c.Render("default/page", fiber.Map{
+		"Root":      ws.RelativeURLRoot,
 		"Paste":     paste,
 		"Languages": codemirror.Modes,
 	}, "layout/layout")
@@ -198,7 +218,7 @@ func (ws *WebServer) Create(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.Redirect(fmt.Sprintf("/p/%s", hash), fiber.StatusFound)
+	return c.Redirect(ws.RelativeURLRoot+fmt.Sprintf("/p/%s", hash), fiber.StatusFound)
 }
 
 // Serve ...

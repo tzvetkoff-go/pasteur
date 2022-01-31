@@ -83,3 +83,8 @@ webserver:
   #
   # Value: /path/to/file
   tls-key:
+
+  # Relative URL root.
+  #
+  # Value: string
+  relative-url-root: /pasteur

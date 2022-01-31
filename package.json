@@ -9,7 +9,7 @@
   "author": "Latchezar Tzvetkoff <latchezar@tzvetkoff.net>",
   "license": "MIT",
   "dependencies": {
-    "codemirror": "^5.65.0",
+    "codemirror": "^5.65.1",
     "codemirror-whitespaces": "^0.1.0",
     "jquery": "^3.6.0",
     "select2": "^4.1.0-rc.0"
