@@ -3,26 +3,27 @@ package db
 import (
 	"github.com/tzvetkoff-go/errors"
 
-	"github.com/tzvetkoff-go/pasteur/pkg/config"
-	"github.com/tzvetkoff-go/pasteur/pkg/db/filesystem"
 	"github.com/tzvetkoff-go/pasteur/pkg/db/sql"
 	"github.com/tzvetkoff-go/pasteur/pkg/model"
 )
 
+// DefaultPerPage ...
+const DefaultPerPage = 20
+
 // DB ...
 type DB interface {
+	Migrate() error
+	GetPasteByID(int) (*model.Paste, error)
 	CreatePaste(*model.Paste) (*model.Paste, error)
-	RetrievePasteByID(int) (*model.Paste, error)
+	PaginatePastes(page int, perPage int, distance int, conditions ...interface{}) (*model.PaginatedPasteList, error)
 }
 
 // New ...
-func New(dbConfig *config.DB) (DB, error) {
-	switch dbConfig.Storage {
-	case "filesystem":
-		return filesystem.New(&dbConfig.FileSystem)
+func New(config *Config) (DB, error) {
+	switch config.Type {
 	case "sql":
-		return sql.New(&dbConfig.SQL)
+		return sql.New(&config.SQL)
 	default:
-		return nil, errors.New("unknown database storage: %s", dbConfig.Storage)
+		return nil, errors.New("unknown database storage: %s", config.Type)
 	}
 }

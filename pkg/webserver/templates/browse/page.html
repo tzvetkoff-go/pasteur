@@ -1,0 +1,44 @@
+<article>
+  <div class="container">
+    <div class="filter">
+      <form method="GET" action="{{ .RelativeURLRoot }}/browse">
+        <div class="control">
+          <label for="filetype">Filetype:</label>
+          <select id="filetype" name="filetype">
+            <option value="">Auto</option>
+            {{- range $language := .Languages }}
+            <option value="{{ $language.ID }}">{{ $language.Name }}</option>
+            {{- end }}
+          </select>
+        </div>
+
+        <div class="control">
+          <button type="submit">Filter</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="list">
+      {{- if gt (len .Pastes) 0 }}
+      <ul>
+        {{- range $paste := .Pastes }}
+        {{- $id := $paste.ID | hash_encode }}
+        <li>
+          <a href="{{ $.RelativeURLRoot }}/{{ $id }}">
+            <span>{{ $paste.Filename }}</span>
+            <em>
+              Filetype: <b>{{ $paste.Filetype | format_filetype }}</b>,
+              published: <b>{{ $paste.CreatedAt | format_datetime }}</b>
+            </em>
+          </a>
+        </li>
+        {{- end }}
+      </ul>
+      {{- else }}
+      <em>Nothing found.</em>
+      {{- end }}
+    </div>
+
+    {{- template "pagination/pagination" (list .Query .Pagination) }}
+  </div>
+</article>

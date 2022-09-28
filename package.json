@@ -1,26 +1,21 @@
 {
   "name": "pasteur",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "pasteur",
   "repository": "github.com/tzvetkoff-go/pasteur",
   "scripts": {
-    "build": "npm i && npx grunt"
+    "build": "npm i && node ./build.js"
   },
   "author": "Latchezar Tzvetkoff <latchezar@tzvetkoff.net>",
   "license": "MIT",
   "dependencies": {
-    "codemirror": "^5.65.1",
-    "codemirror-whitespaces": "^0.1.0",
-    "jquery": "^3.6.0",
+    "jquery": "^3.6.1",
+    "monaco-editor": "^0.34.0",
     "select2": "^4.1.0-rc.0"
   },
   "devDependencies": {
-    "grunt": "^1.4.1",
-    "grunt-cli": "^1.4.3",
-    "grunt-contrib-concat": "^2.0.0",
-    "grunt-contrib-uglify": "^5.0.1",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-sass": "^3.1.0",
-    "node-sass": "^7.0.0"
+    "esbuild": "^0.15.9",
+    "esbuild-sass-plugin": "^2.3.3",
+    "glob": "8.0.3"
   }
 }

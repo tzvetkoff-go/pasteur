@@ -113,7 +113,7 @@ arguments = [10]
 [rule.modifies-value-receiver]
 
 # Packages should have comments.
-[rule.package-comments]
+#[rule.package-comments]
 
 # This rule suggests a shorter way of writing ranges that do not use the second value.
 [rule.range]

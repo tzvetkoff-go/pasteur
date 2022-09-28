@@ -1,3 +1,8 @@
 <header>
-  <h1><a href="/">Pasteur</a></h1>
+  <div class="container">
+    <ul class="menu">
+      <li class="item{{ if eq .ActiveMenu 1 }} active{{ end }}"><a href="{{ .AbsoluteURLRoot }}">Pasteur</a></li>
+      <li class="item{{ if eq .ActiveMenu 2 }} active{{ end }}"><a href="{{ .RelativeURLRoot }}/browse">Browse</a></li>
+    </ul>
+  </div>
 </header>

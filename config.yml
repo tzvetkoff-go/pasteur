@@ -1,41 +1,51 @@
 ---
 # Logger configuration.
 logger:
-  # Logger output.
-  #
-  # Value: stdout | stderr | /path/to/file
-  output: stdout
-
-  # Logging level.
+  # Log level.
   #
   # Value: emerg | alert | crit | error | warning | notice | info | debug
-  level: info
+  level: debug
+
+  # Logger backends.
+  #
+  # Value: array
+  backends:
+  -
+    # Backend type.
+    #
+    # Value: file | syslog
+    type: file
+
+    # File backend configuration.
+    file:
+      # Destination.
+      #
+      # Value: stdout | stderr | /path/to/file
+      destination: stderr
 
 # Database configuration.
 db:
   # Storage type.
   #
-  # Value: filesystem | sql
-  storage: filesystem
-
-  # FileSystem DB configuration.
-  filesystem:
-    # Root path
-    #
-    # Value: /path/to/dir
-    root: ./db
+  # Value: sql
+  type: sql
 
   # SQL DB configuration.
   sql:
     # Driver
     #
-    # Value: sqlite3
+    # Value: sqlite3 | mysql | pgx
     driver: sqlite3
 
     # DSN
     #
     # Value: string
     dsn: ./db.sqlite3
+
+    # Migrate automatically on start
+    #
+    # Value: boolean
+    auto-migrate: true
 
 # Hasher configuration.
 hasher:
@@ -87,4 +97,4 @@ webserver:
   # Relative URL root.
   #
   # Value: string
-  relative-url-root: /pasteur
+  relative-url-root: /p

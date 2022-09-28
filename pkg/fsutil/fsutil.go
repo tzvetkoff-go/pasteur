@@ -2,6 +2,7 @@ package fsutil
 
 import (
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path"
@@ -19,12 +20,23 @@ func Extract(fsys fs.FS, rootPath string) error {
 			return err
 		}
 
-		data, err := fs.ReadFile(fsys, filePath[1:])
+		file, err := fsys.Open(filePath[1:])
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		stat, err := file.Stat()
 		if err != nil {
 			return err
 		}
 
-		err = os.WriteFile(destPath, data, 0644)
+		data, err := io.ReadAll(file)
+		if err != nil {
+			return err
+		}
+
+		err = os.WriteFile(destPath, data, stat.Mode())
 		if err != nil {
 			return err
 		}

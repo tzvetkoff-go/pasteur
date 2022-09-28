@@ -1,0 +1,410 @@
+//
+// Base ...
+//
+
+:root {
+  --color-header-bg: #2e323e;
+  --color-header-menu-text: #bbc0ca;
+  --color-header-menu-text-hover: #dbe0ea;
+  --color-header-menu-bg-hover: #ffffff10;
+
+  --color-footer-bg: #2e323e;
+
+  --color-nav-bg: #2e323e;
+
+  --color-body-bg: #383c4a;
+  --color-body-text: #bbc0ca;
+  --color-body-link-text: #87ab63;
+  --color-body-link-text-hover: #a7cb83;
+
+  --color-body-input-bg: #292d39;
+  --color-body-input-text: #d5dbe6;
+  --color-body-input-placeholder: #bfbfbfde;
+  --color-body-input-border: #454a57;
+  --color-body-input-border-hover: #505667;
+  --color-body-input-border-active: #87ab63;
+
+  --color-body-list-item-bg: #2e323e;
+  --color-body-list-item-bg-hover: #3e424e;
+
+  --color-scrollbar: #87ab63;
+  --color-scrollbar-hover: #87ab63bf;
+  --color-scrollbar-active: #87ab637f;
+}
+
+
+//
+// Responsive ...
+//
+
+@media only screen and (max-width:1199.98px) {
+  header, footer, article {
+    min-width: 952px;
+
+    .container {
+      width: 932px;
+    }
+  }
+}
+
+@media only screen and (min-width:1200px) {
+  header, footer, article {
+    min-width: 1146px;
+
+    .container {
+      width: 1126px;
+    }
+  }
+}
+
+
+//
+// Common ...
+//
+
+* {
+  margin: 0;
+  padding: 0;
+  scrollbar-color: var(--color-scrollbar) transparent;
+  caret-color: var(--color-body-text);
+}
+
+html {
+  height: 100%;
+
+  body {
+    background: var(--color-body-bg);
+    color: var(--color-body-text);
+    height: 100%;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    min-height: 600px;
+  }
+}
+
+
+//
+// Header ...
+//
+
+header {
+  width: 100%;
+  background: var(--color-header-bg);
+
+  .container {
+    box-sizing: border-box;
+    height: 60px;
+    margin: 0 auto;
+    padding: 10px 0;
+
+    .menu {
+      list-style: none outside none;
+
+      .item {
+        float: left;
+
+        a {
+          display: block;
+          height: 40px;
+          line-height: 40px;
+          margin: 0 10px 0 0;
+          padding: 0 15px;
+          text-decoration: none;
+
+          color: var(--color-header-menu-text);
+          border-radius: 8px;
+
+          &:hover {
+            background: var(--color-header-menu-bg-hover);
+            color: var(--color-header-menu-text-hover);
+          }
+        }
+
+        &.active {
+          a {
+            background: var(--color-header-menu-bg-hover);
+          }
+        }
+      }
+
+      &:after {
+        display: block;
+        width: 0;
+        height: 0;
+        font-size: 0;
+        content: ' ';
+      }
+    }
+  }
+}
+
+//
+// Footer ...
+//
+
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: var(--color-footer-bg);
+
+  .container {
+    height: 60px;
+    margin: 0 auto;
+
+    address {
+      line-height: 60px;
+      font-style: italic;
+    }
+  }
+}
+
+
+//
+// Main ...
+//
+
+article {
+  padding: 0 0 70px 0;
+
+  .container {
+    position: relative;
+    margin: 0 auto;
+
+    a {
+      color: var(--color-body-link-text);
+      text-decoration: none;
+
+      &:hover {
+        color: var(--color-body-link-text-hover);
+        text-decoration: underline;
+      }
+    }
+
+    .control {
+      width: 400px;
+      margin: 10px 0;
+      display: inline-block;
+
+      > label {
+        display: inline-block;
+        width: 120px;
+        padding: 0;
+        color: #d5dbe6;
+        text-align: right;
+        font: normal 13px/21px 'Consolas','Menlo','Monaco','Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','monospace','serif';
+      }
+
+      > input[type='text'] {
+        width: 240px;
+        padding: 8px;
+        background: #292d39;
+        color: #d5dbe6;
+        border: 1px solid #454a57;
+        border-radius: 4px;
+        outline: none;
+        box-shadow: #00000013 0 1px 2px inset;
+        font: normal 13px/21px 'Consolas','Menlo','Monaco','Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','monospace','serif';
+
+        &::placeholder {
+          color: var(--color-body-input-placeholder);
+        }
+
+        &:hover {
+          border: 1px solid var(--color-body-input-border-hover);
+        }
+
+        &:focus {
+          border: 1px solid var(--color-body-input-border-active);
+        }
+      }
+
+      > select {
+        width: 240px;
+        margin: 0 10px 0 0;
+
+        &.indent-style-select {
+          width: 150px;
+        }
+
+        &.indent-size-select {
+          width: 80px;
+        }
+      }
+
+      > .select2 {
+        margin: 0 10px 0 0;
+      }
+
+      > button {
+        padding: 10px 20px;
+        background: #87ab63;
+        color: #ffffff;
+        border: 1px solid #454a57;
+        border-radius: 6px;
+        font: normal 13px/21px 'Consolas','Menlo','Monaco','Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','monospace','serif';
+        cursor: pointer;
+
+        &:hover {
+          background: #a0cc75;
+        }
+
+        &:active {
+          background: #198f35;
+        }
+      }
+    }
+
+    .code {
+      position: relative;
+      box-sizing: border-box;
+      min-height: 400px;
+      height: calc(100vh - 350px);
+      margin: 10px 0;
+
+      > textarea {
+        display: none;
+      }
+
+      > .monaco-editor {
+        border: 1px solid #333333;
+        border-radius: 4px;
+
+        .monaco-scrollable-element > .scrollbar > .slider {
+          background: var(--color-scrollbar) !important;
+          border-radius: 4px;
+        }
+        .monaco-scrollable-element > .scrollbar > .slider:hover {
+          background: var(--color-scrollbar-hover) !important;
+        }
+        .monaco-scrollable-element > .scrollbar > .slider:active {
+          background: var(--color-scrollbar-active) !important;
+        }
+      }
+    }
+
+    .list {
+      ul {
+        list-style: none inside none;
+
+        li {
+          margin: 0 0 10px 0;
+
+          a {
+            display: block;
+            padding: 10px;
+            border-radius: 4px;
+            background: var(--color-body-list-item-bg);
+            border: 1px solid var(--color-body-list-item-bg);
+
+            &:hover {
+              background: var(--color-body-list-item-bg-hover);
+            }
+
+            span {
+              display: block;
+              font-weight: bold;
+            }
+
+            em {
+              display: block;
+            }
+          }
+        }
+      }
+    }
+
+    .paginator {
+      margin: 20px 0 0 0;
+
+      ul {
+        float: left;
+        list-style: none outside none;
+        border: 1px solid var(--color-body-list-item-bg);
+        border-radius: 5px;
+
+        li {
+          float: left;
+          margin: 0;
+          padding: 0;
+
+          a {
+            display: block;
+            padding: 10px 15px;
+            background: var(--color-body-list-item-bg);
+
+            &:hover {
+              background: var(--color-body-list-item-bg-hover);
+            }
+          }
+
+          span {
+            display: block;
+            padding: 10px 10px;
+            cursor: disabled;
+
+            &.current {
+              padding: 10px 15px;
+              font-weight: bold;
+            }
+          }
+        }
+
+        &:after {
+          display: block;
+          width: 0;
+          height: 0;
+          font-size: 0;
+          content: ' ';
+        }
+      }
+    }
+  }
+}
+
+/* select2 fixes */
+.select2-container {
+  margin: 1px 0 0 0;
+
+  .select2-search--inline {
+    .select2-search__field {
+      height: 23px;
+    }
+  }
+
+  .select2-selection--single {
+    height: 39px;
+
+    .select2-selection__rendered {
+      line-height: 39px;
+      font: normal 13px/36px 'Consolas','Menlo','Monaco','Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','monospace','serif';
+    }
+
+    .select2-selection__arrow {
+      height: 36px;
+    }
+  }
+
+  .select2-dropdown {
+    .select2-results {
+      .select2-results__option {
+        font: normal 13px/21px 'Consolas','Menlo','Monaco','Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','monospace','serif';
+      }
+    }
+  }
+
+  .select2-selection--multiple {
+    .select2-selection__rendered {
+      .select2-selection__choice {
+        font: normal 13px/24px 'Consolas','Menlo','Monaco','Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','monospace','serif';
+      }
+    }
+
+    .select2-selection__choice__remove {
+      padding: 4px 3px;
+    }
+
+    .select2-selection__choice__display {
+      padding: 9px 3px;
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{{- $query := index . 0 }}
+{{- $pagination := index . 1 }}
+
+{{- if gt $pagination.TotalPages 1 }}
+<div class="paginator">
+  <ul>
+    <li>
+      {{- if eq $pagination.CurrentPage 1 -}}
+      <span class="current">1</span>
+      {{- else -}}
+      <a href="{{ add_query $query "page" "1" }}">1</a>
+      {{- end -}}
+    </li>
+    {{- if gt $pagination.PaginationStartPage 2 }}
+    <li>
+      <span class="gap">&hellip;</span>
+    </li>
+    {{- end }}
+    {{- range $page := iterate $pagination.PaginationStartPage $pagination.PaginationEndPage }}
+    <li>
+      {{- if eq $page $pagination.CurrentPage -}}
+      <span class="current">{{ $page }}</span>
+      {{- else -}}
+      <a href="{{ add_query $query "page" $page }}">{{ $page }}</a>
+      {{- end -}}
+    </li>
+    {{- end }}
+    {{- if lt $pagination.PaginationEndPage $pagination.TotalPages }}
+    <li><span class="gap">&hellip;</span></li>
+    {{- end }}
+    <li>
+      {{- if eq $pagination.CurrentPage $pagination.TotalPages -}}
+      <span class="current">{{ $pagination.TotalPages }}</span>
+      {{- else -}}
+      <a href="{{ add_query $query "page" $pagination.TotalPages }}">{{ $pagination.TotalPages }}</a>
+      {{- end -}}
+    </li>
+  </ul>
+</div>
+{{- end }}

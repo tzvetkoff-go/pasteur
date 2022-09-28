@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/tzvetkoff-go/pasteur/commands"
+	"github.com/tzvetkoff-go/pasteur/pkg/cli"
 )
 
 func main() {
-	_ = commands.NewRootCommand().Execute()
+	_ = cli.NewRootCommand().Execute()
 }

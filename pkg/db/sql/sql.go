@@ -2,10 +2,13 @@ package sql
 
 import (
 	dbSql "database/sql"
+	"fmt"
+	"math"
+	"strings"
 	"sync"
+	"time"
 
 	"github.com/tzvetkoff-go/logger"
-	"github.com/tzvetkoff-go/pasteur/pkg/config"
 	"github.com/tzvetkoff-go/pasteur/pkg/model"
 	"github.com/tzvetkoff-go/pasteur/pkg/stringutil"
 )
@@ -18,8 +21,8 @@ type SQL struct {
 }
 
 // New ...
-func New(sqlConfig *config.SQL) (*SQL, error) {
-	db, err := dbSql.Open(sqlConfig.Driver, sqlConfig.DSN)
+func New(config *Config) (*SQL, error) {
+	db, err := dbSql.Open(config.Driver, config.DSN)
 	if err != nil {
 		return nil, err
 	}
@@ -34,16 +37,18 @@ func New(sqlConfig *config.SQL) (*SQL, error) {
 		StatementCache: map[string]*dbSql.Stmt{},
 	}
 
-	err = result.Setup()
-	if err != nil {
-		return nil, err
+	if config.AutoMigrate {
+		err = result.Migrate()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return result, nil
 }
 
-// Setup ...
-func (sql *SQL) Setup() error {
+// Migrate ...
+func (sql *SQL) Migrate() error {
 	_, err := sql.DB.Exec(`CREATE TABLE IF NOT EXISTS schema_migrations (version VARCHAR(255))`)
 	if err != nil {
 		return err
@@ -167,17 +172,24 @@ func (sql *SQL) Query(q string, args ...interface{}) (*dbSql.Rows, error) {
 	return sql.StatementCache[q].Query(args...)
 }
 
+// CreatePasteQuery ...
+var CreatePasteQuery = stringutil.FormatQuery(`
+	INSERT INTO pastes (private, filename, filetype, indent_style, indent_size, content, created_at)
+				VALUES (?, ?, ?, ?, ?, ?, ?)
+`)
+
 // CreatePaste ...
 func (sql *SQL) CreatePaste(paste *model.Paste) (*model.Paste, error) {
+	paste.CreatedAt = time.Now()
 	result, err := sql.Exec(
-		stringutil.TrimHeredoc(`
-			INSERT INTO pastes (indent_style, indent_size, mime_type, filename, content) VALUES (?, ?, ?, ?, ?)
-		`),
+		CreatePasteQuery,
+		paste.Private,
+		paste.Filename,
+		paste.Filetype,
 		paste.IndentStyle,
 		paste.IndentSize,
-		paste.MimeType,
-		paste.Filename,
 		paste.Content,
+		paste.CreatedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -193,28 +205,136 @@ func (sql *SQL) CreatePaste(paste *model.Paste) (*model.Paste, error) {
 	return paste, nil
 }
 
-// RetrievePasteByID ...
-func (sql *SQL) RetrievePasteByID(id int) (*model.Paste, error) {
-	row, err := sql.QueryRow(
-		stringutil.TrimHeredoc(`
-			SELECT id, indent_style, indent_size, mime_type, filename, content FROM pastes WHERE id = ?
-		`),
+// GetPasteByIDQuery ...
+var GetPasteByIDQuery = stringutil.FormatQuery(`
+	SELECT id, private, indent_style, indent_size, filename, filetype, content, created_at
+	  FROM pastes
+	 WHERE id = ?
+`)
+
+// GetPasteByID ...
+func (sql *SQL) GetPasteByID(id int) (*model.Paste, error) {
+	row, err := sql.QueryRow(GetPasteByIDQuery, id)
+	if err != nil {
+		return nil, err
+	}
+
+	paste := &model.Paste{}
+	err = row.Scan(
+		&paste.ID,
+		&paste.Private,
+		&paste.IndentStyle,
+		&paste.IndentSize,
+		&paste.Filename,
+		&paste.Filetype,
+		&paste.Content,
+		&paste.CreatedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	result := &model.Paste{}
-	err = row.Scan(
-		&result.ID,
-		&result.IndentStyle,
-		&result.IndentSize,
-		&result.MimeType,
-		&result.Filename,
-		&result.Content,
-	)
+	return paste, nil
+}
+
+// CountPastesQuery ...
+var CountPastesQuery = stringutil.FormatQuery(`
+	SELECT COUNT(*)
+	  FROM pastes
+`)
+
+// ListPastesQuery ...
+var ListPastesQuery = stringutil.FormatQuery(`
+	SELECT id, private, indent_style, indent_size, filename, filetype, content, created_at
+	  FROM pastes
+`)
+
+// PaginatePastes ...
+func (sql *SQL) PaginatePastes( // revive:disable-line:function-result-limit
+	page int,
+	perPage int,
+	distance int,
+	conditions ...interface{},
+) (
+	*model.PaginatedPasteList,
+	error,
+) {
+	countQuery := CountPastesQuery
+	listQuery := ListPastesQuery
+	stringConditions := []string{}
+	sqlConditions := []interface{}{}
+	offset := page*perPage - perPage
+
+	if len(conditions) > 0 {
+		for _, condition := range conditions {
+			switch condition := condition.(type) {
+			case map[string]interface{}:
+				for key, value := range condition {
+					stringConditions = append(stringConditions, key+" = ?")
+					sqlConditions = append(sqlConditions, value)
+				}
+			case string:
+				stringConditions = append(stringConditions, condition)
+			default:
+				sqlConditions = append(sqlConditions, condition)
+			}
+		}
+	}
+
+	if len(stringConditions) > 0 {
+		countQuery += " WHERE " + strings.Join(stringConditions, " AND ")
+		listQuery += " WHERE " + strings.Join(stringConditions, " AND ")
+	}
+
+	listQuery += fmt.Sprintf(" LIMIT %d OFFSET %d", perPage, offset)
+
+	// SELECT COUNT(*) ...
+	row, err := sql.QueryRow(countQuery, sqlConditions...)
 	if err != nil {
 		return nil, err
+	}
+	total := 0
+	err = row.Scan(&total)
+	if err != nil {
+		return nil, err
+	}
+	totalPages := total / perPage
+
+	// SELECT * ...
+	rows, err := sql.Query(listQuery, sqlConditions...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := &model.PaginatedPasteList{
+		Pastes: []*model.Paste{},
+		Pagination: &model.Pagination{
+			CurrentPage:         page,
+			PaginationStartPage: int(math.Max(float64(page-distance), 2)),
+			PaginationEndPage:   int(math.Min(float64(page+distance+1), float64(totalPages))),
+			ItemsPerPage:        perPage,
+			TotalItems:          total,
+			TotalPages:          totalPages,
+		},
+	}
+	for rows.Next() {
+		paste := &model.Paste{}
+		err = rows.Scan(
+			&paste.ID,
+			&paste.Private,
+			&paste.IndentStyle,
+			&paste.IndentSize,
+			&paste.Filename,
+			&paste.Filetype,
+			&paste.Content,
+			&paste.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		result.Pastes = append(result.Pastes, paste)
 	}
 
 	return result, nil

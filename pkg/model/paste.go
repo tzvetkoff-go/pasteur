@@ -1,104 +1,98 @@
 package model
 
 import (
+	"path"
 	"strings"
+	"time"
 
-	"github.com/go-enry/go-enry/v2"
 	"github.com/tzvetkoff-go/errors"
-	"github.com/tzvetkoff-go/pasteur/pkg/codemirror"
+	"github.com/tzvetkoff-go/pasteur/pkg/monaco"
 )
 
 // Paste ...
 type Paste struct {
-	ID          int    `json:"-"            yaml:"id"`
-	IndentStyle string `json:"indent-style" yaml:"indent-style"`
-	IndentSize  string `json:"indent-size"  yaml:"indent-size"`
-	MimeType    string `json:"mime-type"    yaml:"mime-type"`
-	Filename    string `json:"filename"     yaml:"filename"`
-	Content     string `json:"content"      yaml:"content"`
+	ID          int       `json:"-"`
+	Private     int       `json:"-"`
+	Filename    string    `json:"filename"`
+	Filetype    string    `json:"filetype"`
+	IndentStyle string    `json:"indent-style"`
+	IndentSize  int       `json:"indent-size"`
+	Content     string    `json:"content"`
+	CreatedAt   time.Time `json:"created-at"`
+}
+
+// PasteList ...
+type PasteList []*Paste
+
+// PaginatedPasteList ...
+type PaginatedPasteList struct {
+	Pastes     []*Paste
+	Pagination *Pagination
 }
 
 // NewPaste ...
 func NewPaste() *Paste {
 	return &Paste{
 		ID:          0,
-		IndentStyle: "spaces",
-		IndentSize:  "4",
-		MimeType:    "",
+		Private:     0,
 		Filename:    "",
+		Filetype:    "",
+		IndentStyle: "spaces",
+		IndentSize:  4,
 		Content:     "",
+		CreatedAt:   time.Time{},
 	}
 }
 
 // Validate ...
 func (p *Paste) Validate() error {
-	if p.IndentStyle == "" {
-		p.IndentStyle = "spaces"
-	}
-	if p.IndentSize == "" {
-		p.IndentSize = "4"
-	}
-	if p.MimeType == "" {
-		lang, _ := enry.GetLanguageByContent(p.Filename, []byte(p.Content))
+	//
+	// Fill defaults ...
+	//
 
-		if lang != "" {
-			lang = strings.ToLower(lang)
-			for _, mode := range codemirror.Modes {
-				if lang == strings.ToLower(mode.Name) {
-					if len(mode.MimeTypes) > 0 {
-						p.MimeType = mode.MimeTypes[0]
-						goto SearchEnd
-					}
-				}
+	if p.Filetype == "" {
+		for _, monacoLanguage := range monaco.Languages {
+			pasteExtension := path.Ext(p.Filename)
 
-				for _, alias := range mode.Aliases {
-					if lang == strings.ToLower(alias) {
-						if len(mode.MimeTypes) > 0 {
-							p.MimeType = mode.MimeTypes[0]
-							goto SearchEnd
-						}
-					}
+			for _, filename := range monacoLanguage.Filenames {
+				if p.Filename == filename {
+					p.Filetype = monacoLanguage.ID
+					goto SearchEnd
 				}
 			}
-		}
-	SearchEnd:
 
-		if p.MimeType == "" {
-			p.MimeType = "text/plain"
+			for _, extension := range monacoLanguage.Extensions {
+				if pasteExtension == extension {
+					p.Filetype = monacoLanguage.ID
+					goto SearchEnd
+				}
+			}
+		SearchEnd:
 		}
 	}
+
+	//
+	// Perform validations ...
+	//
 
 	if p.IndentStyle != "tabs" && p.IndentStyle != "spaces" {
 		return errors.New("indent-style: invalid value")
 	}
 
-	if p.IndentSize != "1" &&
-		p.IndentSize != "2" &&
-		p.IndentSize != "3" &&
-		p.IndentSize != "4" &&
-		p.IndentSize != "5" &&
-		p.IndentSize != "6" &&
-		p.IndentSize != "7" &&
-		p.IndentSize != "8" {
-		return errors.New("paste-indent-size: invalid value")
+	if p.IndentSize < 0 || p.IndentSize > 8 {
+		return errors.New("indent-size: invalid value")
 	}
 
-	mimeTypeOK := false
-	for i := 0; i < len(codemirror.Modes); i++ {
-		mode := codemirror.Modes[i]
-		for j := 0; j < len(mode.MimeTypes); j++ {
-			if p.MimeType == mode.MimeTypes[j] {
-				mimeTypeOK = true
-				break
+	if p.Filetype != "" {
+		filetypeOK := false
+		for _, monacoLanguage := range monaco.Languages {
+			if p.Filetype == monacoLanguage.ID {
+				filetypeOK = true
 			}
 		}
-
-		if mimeTypeOK {
-			break
+		if !filetypeOK {
+			return errors.New("filetype: unknown filetype")
 		}
-	}
-	if !mimeTypeOK {
-		return errors.New("mime-type: unknown mime type")
 	}
 
 	if strings.TrimSpace(p.Content) == "" {

@@ -34,3 +34,12 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
 	logger.Error("%s", err)
 	return c.SendStatus(fiber.StatusInternalServerError)
 }
+
+// Redirect ...
+func Redirect(path string) fiber.Handler {
+	fn := func(ctx *fiber.Ctx) error {
+		return ctx.Redirect(path)
+	}
+
+	return fn
+}

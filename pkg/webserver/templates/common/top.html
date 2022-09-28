@@ -2,8 +2,9 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ if ne .Paste.Filename "" }}{{ .Paste.Filename }} - {{ end }}Pasteur</title>
-  <link rel="stylesheet" type="text/css" media="screen, projection" href="{{ .Root }}/assets/app.bundle.css" />
-  <script type="text/javascript" src="{{ .Root }}/assets/app.bundle.js"></script>
+  <title>{{ if and (ne .Paste nil) (ne .Paste.Filename "") }}{{ .Paste.Filename }} - {{ end }}Pasteur</title>
+  <link rel="stylesheet" type="text/css" media="screen, projection" href="{{ .RelativeURLRoot }}/assets/app.css" />
+  <script type="text/javascript" src="{{ .RelativeURLRoot }}/assets/app.js"></script>
+  <script type="text/javascript">window.RelativeURLRoot = '{{ .RelativeURLRoot }}';</script>
 </head>
 <body>

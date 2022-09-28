@@ -3,8 +3,6 @@ package hasher
 import (
 	"github.com/speps/go-hashids"
 	"github.com/tzvetkoff-go/errors"
-
-	"github.com/tzvetkoff-go/pasteur/pkg/config"
 )
 
 // Hasher ...
@@ -13,11 +11,11 @@ type Hasher struct {
 }
 
 // New ...
-func New(hasherConfig *config.Hasher) (*Hasher, error) {
+func New(config *Config) (*Hasher, error) {
 	hd := hashids.NewData()
-	hd.Alphabet = hasherConfig.Alphabet
-	hd.Salt = hasherConfig.Salt
-	hd.MinLength = hasherConfig.MinLength
+	hd.Alphabet = config.Alphabet
+	hd.Salt = config.Salt
+	hd.MinLength = config.MinLength
 
 	h, err := hashids.NewWithData(hd)
 	if err != nil {
