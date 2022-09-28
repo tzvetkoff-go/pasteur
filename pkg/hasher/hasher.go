@@ -45,3 +45,20 @@ func (h *Hasher) Decode(hash string) (int, error) {
 
 	return ints[0], nil
 }
+
+// EncodeAtomic ...
+func (h *Hasher) EncodeAtomic(id int) string {
+	hash, _ := h.Hashids.Encode([]int{id})
+	return hash
+}
+
+// DecodeAtomic ...
+func (h *Hasher) DecodeAtomic(hash string) int {
+	ints, _ := h.Hashids.DecodeWithError(hash)
+
+	if len(ints) == 1 {
+		return ints[0]
+	}
+
+	return 0
+}

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -14,6 +15,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/template/html"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/tzvetkoff-go/errors"
 	"github.com/tzvetkoff-go/logger"
 	"github.com/valyala/fasthttp"
@@ -50,6 +53,70 @@ type WebServer struct {
 	Hasher *hasher.Hasher `inject:"Hasher"`
 	DB     db.DB          `inject:"DB"`
 }
+
+// APIDoc ...
+// revive:disable:line-length-limit
+const APIDoc = `
+# Pasteur
+
+Pasteur is a simple & stupid web pastebin.
+
+
+
+## POST {{root}}
+
+Creates a new paste.
+Request fields:
+
++--------------+---------+----------+-----------+-----------------------------------------+-
+| Name         | Type    | Required | Default   | Description                              |
++--------------+---------+----------+-----------+-----------------------------------------+-
+| filename     | string  | Yes      | paste.txt | Filename.                                |
+| content      | string  | Yes      |           | Content.                                 |
+| private      | integer | No       | 0         | Pass 1 to hide in /browse.               |
+| filetype     | string  | No       | automatic | Filetype.                                |
+| indent-style | string  | No       | spaces    | Indent style. Either "tabs" or "spaces". |
+| indent-size  | integer | No       | tabs      | Indent size. 1..8.                       |
++--------------+---------+----------+-----------+------------------------------------------+-
+| f            | file    | No       |           | Will override all other fields if passed |
++--------------+---------+----------+-----------+------------------------------------------+-
+
+Or
+
+Examples:
+
+  $ curl -XPOST {{root}} -F filename=hello-world.go -F content=$'package main\n\nfunc main() {\n	println("Hello, world!")\n}\n'
+  $ curl -XPOST {{root}} -F f=@hello-world.go
+
+
+
+## GET {{root}}/browse
+
+  Lists public pastes.
+  Query parameters:
+
+  +----------+--------+---------+--------------------------+
+  | Name     | Type   | Default | Description              |
+  +----------+--------+---------+--------------------------+
+  | filetype | string |         | List pastes by filetype. |
+  | page     | int    | 1       | Page number.             |
+  | per      | int    | 20      | Page size. 1..500        |
+  +----------+--------+---------+--------------------------+
+
+  Example:
+
+	$ curl {{root}}/browse?language=go
+
+
+
+## GET {{root}}/:id
+
+Fetches paste content.
+Example:
+
+  $ curl {{root}}/{{id}}
+
+`
 
 // New ...
 func New(config *Config) (*WebServer, error) {
@@ -171,7 +238,7 @@ func New(config *Config) (*WebServer, error) {
 		app.Get("/", httplib.Redirect(result.RelativeURLRoot))
 	}
 
-	app.Get(result.RelativeURLRoot, httplib.Timeout(result.New, 10*time.Second))
+	app.Get(result.RelativeURLRoot, httplib.Timeout(result.Index, 10*time.Second))
 	app.Get(result.RelativeURLRoot+"/browse", httplib.Timeout(result.Browse, 10.*time.Second))
 	app.Get(result.RelativeURLRoot+"/:id.txt", httplib.Timeout(result.ShowRaw, 10*time.Second))
 	app.Get(result.RelativeURLRoot+"/:id", httplib.Timeout(result.Show, 10*time.Second))
@@ -197,8 +264,15 @@ func New(config *Config) (*WebServer, error) {
 	return result, nil
 }
 
-// New ...
-func (ws *WebServer) New(c *fiber.Ctx) error {
+// Index ...
+func (ws *WebServer) Index(c *fiber.Ctx) error {
+	if strings.Index(string(c.Context().UserAgent()), "curl/") == 0 {
+		s := APIDoc
+		s = strings.ReplaceAll(s, "{{root}}", c.BaseURL()+ws.RelativeURLRoot)
+		s = strings.ReplaceAll(s, "{{id}}", ws.Hasher.EncodeAtomic(1))
+		return c.SendString(s)
+	}
+
 	return c.Render("paste/page", fiber.Map{
 		"RelativeURLRoot": ws.RelativeURLRoot,
 		"AbsoluteURLRoot": ws.AbsoluteURLRoot,
@@ -274,11 +348,53 @@ func (ws *WebServer) Browse(c *fiber.Ctx) error {
 	perPage := 20
 	if perPageParam := c.Query("per"); perPageParam != "" {
 		perPage = stringutil.ParseInt(perPageParam)
+		if perPage > 500 {
+			perPage = 500
+		}
 	}
 
 	paginatedPasteList, err := ws.DB.PaginatePastes(page, perPage, 2, conditions)
 	if err != nil {
 		return err
+	}
+
+	if strings.Index(string(c.Context().UserAgent()), "curl/") == 0 {
+		t := table.NewWriter()
+		s := table.StyleDefault
+		s.Format.Header = text.FormatDefault
+		s.Format.Footer = text.FormatDefault
+		t.SetStyle(s)
+		t.AppendHeader(table.Row{"Filename", "URL"})
+
+		for _, paste := range paginatedPasteList.Pastes {
+			t.AppendRow(table.Row{
+				paste.Filename,
+				c.BaseURL() + ws.RelativeURLRoot + ws.Hasher.EncodeAtomic(paste.ID),
+			})
+		}
+
+		if page > 1 {
+			newQuery := &fasthttp.Args{}
+			c.Request().URI().QueryArgs().CopyTo(newQuery)
+			newQuery.Set("page", fmt.Sprint(page-1))
+
+			t.AppendFooter(table.Row{
+				"Prev page",
+				c.BaseURL() + ws.RelativeURLRoot + newQuery.String(),
+			})
+		}
+		if page < paginatedPasteList.Pagination.TotalPages {
+			newQuery := &fasthttp.Args{}
+			c.Request().URI().QueryArgs().CopyTo(newQuery)
+			newQuery.Set("page", fmt.Sprint(page+1))
+
+			t.AppendFooter(table.Row{
+				"Next page",
+				c.BaseURL() + ws.RelativeURLRoot + newQuery.String(),
+			})
+		}
+
+		return c.SendString(t.Render() + "\n")
 	}
 
 	return c.Render("browse/page", fiber.Map{
@@ -306,13 +422,31 @@ func (ws *WebServer) Create(c *fiber.Ctx) error {
 		}
 	} else {
 		paste.Filename = c.FormValue("filename")
-		paste.Filetype = c.FormValue("mime-type")
+		paste.Filetype = c.FormValue("filetype")
 		paste.IndentStyle = c.FormValue("indent-style")
 		paste.IndentSize, _ = strconv.Atoi(c.FormValue("indent-size"))
 		paste.Content = c.FormValue("content")
 
 		if c.FormValue("private") == "1" {
 			paste.Private = 1
+		}
+
+		f, _ := c.FormFile("f")
+		if f != nil {
+			paste.Filename = f.Filename
+
+			mf, err := f.Open()
+			if err != nil {
+				return err
+			}
+			defer mf.Close()
+
+			content, err := ioutil.ReadAll(mf)
+			if err != nil {
+				return err
+			}
+
+			paste.Content = string(content)
 		}
 	}
 
@@ -335,6 +469,10 @@ func (ws *WebServer) Create(c *fiber.Ctx) error {
 	hash, err := ws.Hasher.Encode(paste.ID)
 	if err != nil {
 		return err
+	}
+
+	if strings.Index(string(c.Context().UserAgent()), "curl/") == 0 {
+		return c.SendString(c.BaseURL() + ws.RelativeURLRoot + fmt.Sprintf("/%s\n", hash))
 	}
 
 	return c.Redirect(ws.RelativeURLRoot+fmt.Sprintf("/%s", hash), fiber.StatusFound)

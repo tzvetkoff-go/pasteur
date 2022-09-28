@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/tzvetkoff-go/errors"
+	"github.com/tzvetkoff-go/pasteur/pkg/indentdb"
 	"github.com/tzvetkoff-go/pasteur/pkg/monaco"
 )
 
@@ -50,6 +51,10 @@ func (p *Paste) Validate() error {
 	// Fill defaults ...
 	//
 
+	if p.Filename == "" {
+		p.Filename = "paste.txt"
+	}
+
 	if p.Filetype == "" {
 		for _, monacoLanguage := range monaco.Languages {
 			pasteExtension := path.Ext(p.Filename)
@@ -71,6 +76,25 @@ func (p *Paste) Validate() error {
 		}
 	}
 
+	if p.Filetype == "" {
+		p.Filetype = "plain"
+	}
+
+	if p.IndentStyle == "" {
+		if indent, ok := indentdb.Known[p.Filetype]; ok {
+			p.IndentStyle = indent.Style
+			p.IndentSize = indent.Size
+		}
+	}
+
+	if p.IndentStyle == "" {
+		p.IndentStyle = "spaces"
+	}
+
+	if p.IndentSize == 0 {
+		p.IndentSize = 4
+	}
+
 	//
 	// Perform validations ...
 	//
@@ -88,6 +112,7 @@ func (p *Paste) Validate() error {
 		for _, monacoLanguage := range monaco.Languages {
 			if p.Filetype == monacoLanguage.ID {
 				filetypeOK = true
+				break
 			}
 		}
 		if !filetypeOK {

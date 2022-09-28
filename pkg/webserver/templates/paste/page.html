@@ -27,8 +27,8 @@
       <div class="control">
         <label for="indent-style">Indentation:</label>
         <select id="indent-style" name="indent-style" class="indent-style-select"{{ if ne .Paste.ID 0 }} disabled="disabled"{{ end }}>
-          <option value="spaces" selected="selected">Spaces</option>
-          <option value="tabs">Tabs</option>
+          <option value="spaces"{{ if eq .Paste.IndentStyle "spaces" }} selected="selected"{{ end }}>Spaces</option>
+          <option value="tabs"{{ if eq .Paste.IndentStyle "tabs" }} selected="selected"{{ end }}>Tabs</option>
         </select>
         <select id="indent-size" name="indent-size" class="indent-size-select"{{ if ne .Paste.ID 0 }} disabled="disabled"{{ end }}>
           <option value="1"{{ if eq .Paste.IndentSize 1 }} selected="selected"{{ end }}>1</option>

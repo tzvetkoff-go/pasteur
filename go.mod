@@ -7,6 +7,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.29.0
 	github.com/gofiber/template v1.6.25
 	github.com/jackc/pgx/v4 v4.15.0
+	github.com/jedib0t/go-pretty/v6 v6.3.9
 	github.com/mattn/go-sqlite3 v1.14.12
 	github.com/speps/go-hashids v2.0.0+incompatible
 	github.com/spf13/cobra v1.3.0
@@ -29,6 +30,8 @@ require (
 	github.com/jackc/pgtype v1.10.0 // indirect
 	github.com/klauspost/compress v1.15.0 // indirect
 	github.com/lib/pq v1.10.4 // indirect
+	github.com/mattn/go-runewidth v0.0.13 // indirect
+	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect

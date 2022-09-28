@@ -21,6 +21,22 @@ var Migrations = []Migration{
 					created_at   DATETIME NOT NULL
 				);
 			`))
+			if err != nil {
+				return err
+			}
+			_, err = sql.Exec(stringutil.FormatQuery(`
+				INSERT INTO pastes (
+					private, filename, filetype, indent_style, indent_size, content, created_at
+				) VALUES (
+					1,
+					'hello-world.txt',
+					'plain',
+					'spaces',
+					4,
+					'Hello, world!',
+					'1987-01-07 10:45:00.000'
+				);
+			`))
 
 			return err
 		},
