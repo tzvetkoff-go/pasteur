@@ -85,7 +85,7 @@ Or
 
 Examples:
 
-  $ curl -XPOST {{root}} -F filename=hello-world.go -F content=$'package main\n\nfunc main() {\n	println("Hello, world!")\n}\n'
+  $ curl -XPOST {{root}} -F filename=hello-world.go -F content=$'package main\n\nfunc main() {\n\tprintln("Hello, world!")\n}\n'
   $ curl -XPOST {{root}} -F f=@hello-world.go
 
 
@@ -353,7 +353,12 @@ func (ws *WebServer) Browse(c *fiber.Ctx) error {
 		}
 	}
 
-	paginatedPasteList, err := ws.DB.PaginatePastes(page, perPage, 2, conditions)
+	order := "DESC"
+	if orderParam := c.Query("order"); strings.ToUpper(orderParam) == "ASC" {
+		order = "ASC"
+	}
+
+	paginatedPasteList, err := ws.DB.PaginatePastes(page, perPage, 2, order, conditions)
 	if err != nil {
 		return err
 	}
@@ -364,11 +369,12 @@ func (ws *WebServer) Browse(c *fiber.Ctx) error {
 		s.Format.Header = text.FormatDefault
 		s.Format.Footer = text.FormatDefault
 		t.SetStyle(s)
-		t.AppendHeader(table.Row{"Filename", "URL"})
+		t.AppendHeader(table.Row{"Filename", "Datetime", "URL"})
 
 		for _, paste := range paginatedPasteList.Pastes {
 			t.AppendRow(table.Row{
 				paste.Filename,
+				paste.CreatedAt.Format("2006-01-02 15:04:05 -07:00"),
 				c.BaseURL() + ws.RelativeURLRoot + ws.Hasher.EncodeAtomic(paste.ID),
 			})
 		}

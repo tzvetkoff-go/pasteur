@@ -254,6 +254,7 @@ func (sql *SQL) PaginatePastes( // revive:disable-line:function-result-limit
 	page int,
 	perPage int,
 	distance int,
+	order string,
 	conditions ...interface{},
 ) (
 	*model.PaginatedPasteList,
@@ -284,6 +285,12 @@ func (sql *SQL) PaginatePastes( // revive:disable-line:function-result-limit
 	if len(stringConditions) > 0 {
 		countQuery += " WHERE " + strings.Join(stringConditions, " AND ")
 		listQuery += " WHERE " + strings.Join(stringConditions, " AND ")
+	}
+
+	if order == "ASC" {
+		listQuery += " ORDER BY id ASC"
+	} else {
+		listQuery += " ORDER BY id DESC"
 	}
 
 	listQuery += fmt.Sprintf(" LIMIT %d OFFSET %d", perPage, offset)

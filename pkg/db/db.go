@@ -15,7 +15,13 @@ type DB interface {
 	Migrate() error
 	GetPasteByID(int) (*model.Paste, error)
 	CreatePaste(*model.Paste) (*model.Paste, error)
-	PaginatePastes(page int, perPage int, distance int, conditions ...interface{}) (*model.PaginatedPasteList, error)
+	PaginatePastes(
+		page int,
+		perPage int,
+		distance int,
+		order string,
+		conditions ...interface{},
+	) (*model.PaginatedPasteList, error)
 }
 
 // New ...
