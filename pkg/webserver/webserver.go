@@ -78,7 +78,7 @@ Request fields:
 | indent-style | string  | No       | spaces    | Indent style. Either "tabs" or "spaces". |
 | indent-size  | integer | No       | tabs      | Indent size. 1..8.                       |
 +--------------+---------+----------+-----------+------------------------------------------+-
-| f            | file    | No       |           | Will override all other fields if passed |
+| f            | file    | No       |           | Upload a file directly.                  |
 +--------------+---------+----------+-----------+------------------------------------------+-
 
 Or
@@ -427,16 +427,6 @@ func (ws *WebServer) Create(c *fiber.Ctx) error {
 			return c.SendStatus(fiber.StatusBadRequest)
 		}
 	} else {
-		paste.Filename = c.FormValue("filename")
-		paste.Filetype = c.FormValue("filetype")
-		paste.IndentStyle = c.FormValue("indent-style")
-		paste.IndentSize, _ = strconv.Atoi(c.FormValue("indent-size"))
-		paste.Content = c.FormValue("content")
-
-		if c.FormValue("private") == "1" {
-			paste.Private = 1
-		}
-
 		f, _ := c.FormFile("f")
 		if f != nil {
 			paste.Filename = f.Filename
@@ -453,6 +443,20 @@ func (ws *WebServer) Create(c *fiber.Ctx) error {
 			}
 
 			paste.Content = string(content)
+		} else {
+			paste.Content = c.FormValue("content")
+		}
+
+		if v := c.FormValue("filename"); v != "" {
+			paste.Filename = v
+		}
+
+		paste.Filetype = c.FormValue("filetype")
+		paste.IndentStyle = c.FormValue("indent-style")
+		paste.IndentSize, _ = strconv.Atoi(c.FormValue("indent-size"))
+
+		if c.FormValue("private") == "1" {
+			paste.Private = 1
 		}
 	}
 
