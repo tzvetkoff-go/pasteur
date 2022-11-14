@@ -62,7 +62,6 @@ const APIDoc = `
 Pasteur is a simple & stupid web pastebin.
 
 
-
 ## POST {{root}}
 
 Creates a new paste.
@@ -89,24 +88,22 @@ Examples:
   $ curl -XPOST {{root}} -F f=@hello-world.go
 
 
-
 ## GET {{root}}/browse
 
-  Lists public pastes.
-  Query parameters:
+Lists public pastes.
+Query parameters:
 
-  +----------+--------+---------+--------------------------+
-  | Name     | Type   | Default | Description              |
-  +----------+--------+---------+--------------------------+
-  | filetype | string |         | List pastes by filetype. |
-  | page     | int    | 1       | Page number.             |
-  | per      | int    | 20      | Page size. 1..500        |
-  +----------+--------+---------+--------------------------+
++----------+--------+---------+--------------------------+
+| Name     | Type   | Default | Description              |
++----------+--------+---------+--------------------------+
+| filetype | string |         | List pastes by filetype. |
+| page     | int    | 1       | Page number.             |
+| per      | int    | 20      | Page size. 1..500        |
++----------+--------+---------+--------------------------+
 
-  Example:
+Example:
 
-	$ curl {{root}}/browse?language=go
-
+  $ curl {{root}}/browse?language=go
 
 
 ## GET {{root}}/:id
