@@ -67,20 +67,18 @@ Pasteur is a simple & stupid web pastebin.
 Creates a new paste.
 Request fields:
 
-+--------------+---------+----------+-----------+-----------------------------------------+-
-| Name         | Type    | Required | Default   | Description                              |
-+--------------+---------+----------+-----------+-----------------------------------------+-
-| filename     | string  | Yes      | paste.txt | Filename.                                |
-| content      | string  | Yes      |           | Content.                                 |
-| private      | integer | No       | 0         | Pass 1 to hide in /browse.               |
-| filetype     | string  | No       | automatic | Filetype.                                |
-| indent-style | string  | No       | spaces    | Indent style. Either "tabs" or "spaces". |
-| indent-size  | integer | No       | tabs      | Indent size. 1..8.                       |
-+--------------+---------+----------+-----------+------------------------------------------+-
-| f            | file    | No       |           | Upload a file directly.                  |
-+--------------+---------+----------+-----------+------------------------------------------+-
-
-Or
++--------------+--------+----------+-----------+------------------------------------------+-
+| Name         | Type   | Required | Default   | Description                               |
++--------------+--------+----------+-----------+------------------------------------------+-
+| filename     | string | Yes      | paste.txt | Filename.                                 |
+| content      | string | Yes      |           | Content.                                  |
+| private      | int    | No       | 0         | Pass 1 to hide in /browse.                |
+| filetype     | string | No       | automatic | Filetype.                                 |
+| indent-style | string | No       | spaces    | Indent style.  Either "tabs" or "spaces". |
+| indent-size  | int    | No       | tabs      | Indent size.  1..8.                       |
++--------------+--------+----------+-----------+-------------------------------------------+
+| f            | file   | No       |           | Upload a file directly.                   |
++--------------+--------+----------+-----------+-------------------------------------------+
 
 Examples:
 
@@ -98,7 +96,7 @@ Query parameters:
 +----------+--------+---------+--------------------------+
 | filetype | string |         | List pastes by filetype. |
 | page     | int    | 1       | Page number.             |
-| per      | int    | 20      | Page size. 1..500        |
+| per      | int    | 20      | Page size.  1..500.      |
 +----------+--------+---------+--------------------------+
 
 Example:
