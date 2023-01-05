@@ -27,14 +27,14 @@
       <div class="control">
         <label for="indent-style">Indentation:</label>
         <select id="indent-style" name="indent-style" class="indent-style-select"{{ if ne .Paste.ID 0 }} disabled="disabled"{{ end }}>
-          <option value="spaces"{{ if eq .Paste.IndentStyle "spaces" }} selected="selected"{{ end }}>Spaces</option>
+          <option value="spaces"{{ if eq .Paste.IndentStyle "spaces" "" }} selected="selected"{{ end }}>Spaces</option>
           <option value="tabs"{{ if eq .Paste.IndentStyle "tabs" }} selected="selected"{{ end }}>Tabs</option>
         </select>
         <select id="indent-size" name="indent-size" class="indent-size-select"{{ if ne .Paste.ID 0 }} disabled="disabled"{{ end }}>
           <option value="1"{{ if eq .Paste.IndentSize 1 }} selected="selected"{{ end }}>1</option>
           <option value="2"{{ if eq .Paste.IndentSize 2 }} selected="selected"{{ end }}>2</option>
           <option value="3"{{ if eq .Paste.IndentSize 3 }} selected="selected"{{ end }}>3</option>
-          <option value="4"{{ if eq .Paste.IndentSize 4 }} selected="selected"{{ end }}>4</option>
+          <option value="4"{{ if eq .Paste.IndentSize 4 0 }} selected="selected"{{ end }}>4</option>
           <option value="5"{{ if eq .Paste.IndentSize 5 }} selected="selected"{{ end }}>5</option>
           <option value="6"{{ if eq .Paste.IndentSize 6 }} selected="selected"{{ end }}>6</option>
           <option value="7"{{ if eq .Paste.IndentSize 7 }} selected="selected"{{ end }}>7</option>

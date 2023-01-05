@@ -9,13 +9,13 @@
   "author": "Latchezar Tzvetkoff <latchezar@tzvetkoff.net>",
   "license": "MIT",
   "dependencies": {
-    "jquery": "^3.6.1",
+    "jquery": "^3.6.3",
     "monaco-editor": "^0.34.1",
     "select2": "^4.1.0-rc.0"
   },
   "devDependencies": {
-    "esbuild": "^0.15.13",
-    "esbuild-sass-plugin": "^2.4.0",
+    "esbuild": "^0.16.14",
+    "esbuild-sass-plugin": "^2.4.5",
     "glob": "8.0.3"
   }
 }

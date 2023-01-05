@@ -33,8 +33,8 @@ let monacoGoCode = `package monaco
 // revive:disable:line-length-limit
 
 // Languages ...
-var Languages = []Language{
-\t{
+var Languages = map[string]Language{
+\t"plain": {
 \t\tID:         "plain",
 \t\tName:       "Plain text",
 \t\tAliases:    []string{},
@@ -72,7 +72,7 @@ glob('./node_modules/monaco-editor/esm/vs/basic-languages/*/*.contribution.js').
     language.extensions = language.extensions || [];
     language.filenames = language.filenames || [];
 
-    monacoGoCode += `\t{
+    monacoGoCode += `\t"${language.id}": {
 \t\tID:         "${language.id}",
 \t\tName:       "${name}",
 \t\tAliases:    []string{${JSON.stringify(language.aliases.slice(1)).replace(/,/g, ', ').slice(1, -1)}},

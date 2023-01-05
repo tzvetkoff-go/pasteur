@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/tzvetkoff-go/errors"
+
 	"github.com/tzvetkoff-go/pasteur/pkg/indentdb"
 	"github.com/tzvetkoff-go/pasteur/pkg/monaco"
 )
@@ -38,8 +39,8 @@ func NewPaste() *Paste {
 		Private:     0,
 		Filename:    "",
 		Filetype:    "",
-		IndentStyle: "spaces",
-		IndentSize:  4,
+		IndentStyle: "",
+		IndentSize:  0,
 		Content:     "",
 		CreatedAt:   time.Time{},
 	}
@@ -48,14 +49,10 @@ func NewPaste() *Paste {
 // Validate ...
 func (p *Paste) Validate() error {
 	//
-	// Fill defaults ...
+	// Guess filetype ...
 	//
 
-	if p.Filename == "" {
-		p.Filename = "paste.txt"
-	}
-
-	if p.Filetype == "" {
+	if p.Filetype == "" && p.Filename != "" {
 		for _, monacoLanguage := range monaco.Languages {
 			pasteExtension := path.Ext(p.Filename)
 
@@ -80,15 +77,37 @@ func (p *Paste) Validate() error {
 		p.Filetype = "plain"
 	}
 
-	if p.IndentStyle == "" {
+	//
+	// Guess filename ...
+	//
+
+	if p.Filename == "" {
+		if monacoLanguage, ok := monaco.Languages[p.Filetype]; ok && len(monacoLanguage.Extensions) > 0 {
+			p.Filename = "paste" + monacoLanguage.Extensions[0]
+		} else {
+			p.Filename = "paste.txt"
+		}
+	}
+
+	//
+	// Guess indent ...
+	//
+
+	if p.IndentStyle != "" {
+		if strings.Index("spaces", strings.ToLower(p.IndentStyle)) == 0 {
+			p.IndentStyle = "spaces"
+		} else if strings.Index("tabs", strings.ToLower(p.IndentStyle)) == 0 {
+			p.IndentStyle = "tabs"
+		}
+	} else {
 		if indent, ok := indentdb.Known[p.Filetype]; ok {
 			p.IndentStyle = indent.Style
 			p.IndentSize = indent.Size
 		}
-	}
 
-	if p.IndentStyle == "" {
-		p.IndentStyle = "spaces"
+		if p.IndentStyle == "" {
+			p.IndentStyle = "spaces"
+		}
 	}
 
 	if p.IndentSize == 0 {

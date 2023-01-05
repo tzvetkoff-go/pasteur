@@ -3,603 +3,603 @@ package monaco
 // revive:disable:line-length-limit
 
 // Languages ...
-var Languages = []Language{
-	{
+var Languages = map[string]Language{
+	"plain": {
 		ID:         "plain",
 		Name:       "Plain text",
 		Aliases:    []string{},
 		Extensions: []string{".txt"},
 		Filenames:  []string{},
 	},
-	{
+	"abap": {
 		ID:         "abap",
 		Name:       "ABAP",
 		Aliases:    []string{"ABAP"},
 		Extensions: []string{".abap"},
 		Filenames:  []string{},
 	},
-	{
+	"apex": {
 		ID:         "apex",
 		Name:       "Apex",
 		Aliases:    []string{"apex"},
 		Extensions: []string{".cls"},
 		Filenames:  []string{},
 	},
-	{
+	"azcli": {
 		ID:         "azcli",
 		Name:       "Azure CLI",
 		Aliases:    []string{"azcli"},
 		Extensions: []string{".azcli"},
 		Filenames:  []string{},
 	},
-	{
+	"bat": {
 		ID:         "bat",
 		Name:       "Batch",
 		Aliases:    []string{"bat"},
 		Extensions: []string{".bat", ".cmd"},
 		Filenames:  []string{},
 	},
-	{
+	"bicep": {
 		ID:         "bicep",
 		Name:       "Bicep",
 		Aliases:    []string{},
 		Extensions: []string{".bicep"},
 		Filenames:  []string{},
 	},
-	{
+	"cameligo": {
 		ID:         "cameligo",
 		Name:       "Cameligo",
 		Aliases:    []string{},
 		Extensions: []string{".mligo"},
 		Filenames:  []string{},
 	},
-	{
+	"clojure": {
 		ID:         "clojure",
 		Name:       "Clojure",
 		Aliases:    []string{"Clojure"},
 		Extensions: []string{".clj", ".cljs", ".cljc", ".edn"},
 		Filenames:  []string{},
 	},
-	{
+	"coffeescript": {
 		ID:         "coffeescript",
 		Name:       "CoffeeScript",
 		Aliases:    []string{"coffeescript", "coffee"},
 		Extensions: []string{".coffee"},
 		Filenames:  []string{},
 	},
-	{
+	"c": {
 		ID:         "c",
 		Name:       "C",
 		Aliases:    []string{"c"},
 		Extensions: []string{".c", ".h"},
 		Filenames:  []string{},
 	},
-	{
+	"cpp": {
 		ID:         "cpp",
 		Name:       "C++",
 		Aliases:    []string{"Cpp", "cpp"},
 		Extensions: []string{".cpp", ".cc", ".cxx", ".hpp", ".hh", ".hxx"},
 		Filenames:  []string{},
 	},
-	{
+	"csharp": {
 		ID:         "csharp",
 		Name:       "C#",
 		Aliases:    []string{"csharp"},
 		Extensions: []string{".cs", ".csx", ".cake"},
 		Filenames:  []string{},
 	},
-	{
+	"csp": {
 		ID:         "csp",
 		Name:       "CSP",
 		Aliases:    []string{"csp"},
 		Extensions: []string{},
 		Filenames:  []string{},
 	},
-	{
+	"css": {
 		ID:         "css",
 		Name:       "CSS",
 		Aliases:    []string{"css"},
 		Extensions: []string{".css"},
 		Filenames:  []string{},
 	},
-	{
+	"cypher": {
 		ID:         "cypher",
 		Name:       "Cypher",
 		Aliases:    []string{"OpenCypher"},
 		Extensions: []string{".cypher", ".cyp"},
 		Filenames:  []string{},
 	},
-	{
+	"dart": {
 		ID:         "dart",
 		Name:       "Dart",
 		Aliases:    []string{"dart"},
 		Extensions: []string{".dart"},
 		Filenames:  []string{},
 	},
-	{
+	"dockerfile": {
 		ID:         "dockerfile",
 		Name:       "Dockerfile",
 		Aliases:    []string{},
 		Extensions: []string{".dockerfile"},
 		Filenames:  []string{"Dockerfile"},
 	},
-	{
+	"ecl": {
 		ID:         "ecl",
 		Name:       "ECL",
 		Aliases:    []string{"Ecl", "ecl"},
 		Extensions: []string{".ecl"},
 		Filenames:  []string{},
 	},
-	{
+	"elixir": {
 		ID:         "elixir",
 		Name:       "Elixir",
 		Aliases:    []string{"elixir", "ex"},
 		Extensions: []string{".ex", ".exs"},
 		Filenames:  []string{},
 	},
-	{
+	"flow9": {
 		ID:         "flow9",
 		Name:       "Flow9",
 		Aliases:    []string{"Flow", "flow9", "flow"},
 		Extensions: []string{".flow"},
 		Filenames:  []string{},
 	},
-	{
+	"freemarker2": {
 		ID:         "freemarker2",
 		Name:       "FreeMarker2",
 		Aliases:    []string{"Apache FreeMarker2"},
 		Extensions: []string{".ftl", ".ftlh", ".ftlx"},
 		Filenames:  []string{},
 	},
-	{
+	"freemarker2.tag-angle.interpolation-dollar": {
 		ID:         "freemarker2.tag-angle.interpolation-dollar",
 		Name:       "FreeMarker2 (Angle/Dollar)",
 		Aliases:    []string{"Apache FreeMarker2 (Angle/Dollar)"},
 		Extensions: []string{},
 		Filenames:  []string{},
 	},
-	{
+	"freemarker2.tag-bracket.interpolation-dollar": {
 		ID:         "freemarker2.tag-bracket.interpolation-dollar",
 		Name:       "FreeMarker2 (Bracket/Dollar)",
 		Aliases:    []string{"Apache FreeMarker2 (Bracket/Dollar)"},
 		Extensions: []string{},
 		Filenames:  []string{},
 	},
-	{
+	"freemarker2.tag-angle.interpolation-bracket": {
 		ID:         "freemarker2.tag-angle.interpolation-bracket",
 		Name:       "FreeMarker2 (Angle/Bracket)",
 		Aliases:    []string{"Apache FreeMarker2 (Angle/Bracket)"},
 		Extensions: []string{},
 		Filenames:  []string{},
 	},
-	{
+	"freemarker2.tag-bracket.interpolation-bracket": {
 		ID:         "freemarker2.tag-bracket.interpolation-bracket",
 		Name:       "FreeMarker2 (Bracket/Bracket)",
 		Aliases:    []string{"Apache FreeMarker2 (Bracket/Bracket)"},
 		Extensions: []string{},
 		Filenames:  []string{},
 	},
-	{
+	"freemarker2.tag-auto.interpolation-dollar": {
 		ID:         "freemarker2.tag-auto.interpolation-dollar",
 		Name:       "FreeMarker2 (Auto/Dollar)",
 		Aliases:    []string{"Apache FreeMarker2 (Auto/Dollar)"},
 		Extensions: []string{},
 		Filenames:  []string{},
 	},
-	{
+	"freemarker2.tag-auto.interpolation-bracket": {
 		ID:         "freemarker2.tag-auto.interpolation-bracket",
 		Name:       "FreeMarker2 (Auto/Bracket)",
 		Aliases:    []string{"Apache FreeMarker2 (Auto/Bracket)"},
 		Extensions: []string{},
 		Filenames:  []string{},
 	},
-	{
+	"fsharp": {
 		ID:         "fsharp",
 		Name:       "F#",
 		Aliases:    []string{"FSharp", "fsharp"},
 		Extensions: []string{".fs", ".fsi", ".ml", ".mli", ".fsx", ".fsscript"},
 		Filenames:  []string{},
 	},
-	{
+	"go": {
 		ID:         "go",
 		Name:       "Go",
 		Aliases:    []string{},
 		Extensions: []string{".go"},
 		Filenames:  []string{},
 	},
-	{
+	"graphql": {
 		ID:         "graphql",
 		Name:       "GraphQL",
 		Aliases:    []string{"graphql", "gql"},
 		Extensions: []string{".graphql", ".gql"},
 		Filenames:  []string{},
 	},
-	{
+	"handlebars": {
 		ID:         "handlebars",
 		Name:       "Handlebars",
 		Aliases:    []string{"handlebars", "hbs"},
 		Extensions: []string{".handlebars", ".hbs"},
 		Filenames:  []string{},
 	},
-	{
+	"hcl": {
 		ID:         "hcl",
 		Name:       "Terraform",
 		Aliases:    []string{"tf", "HCL", "hcl"},
 		Extensions: []string{".tf", ".tfvars", ".hcl"},
 		Filenames:  []string{},
 	},
-	{
+	"html": {
 		ID:         "html",
 		Name:       "HTML",
 		Aliases:    []string{"htm", "html", "xhtml"},
 		Extensions: []string{".html", ".htm", ".shtml", ".xhtml", ".mdoc", ".jsp", ".asp", ".aspx", ".jshtm"},
 		Filenames:  []string{},
 	},
-	{
+	"ini": {
 		ID:         "ini",
 		Name:       "Ini",
 		Aliases:    []string{"ini"},
 		Extensions: []string{".ini", ".properties", ".gitconfig"},
 		Filenames:  []string{"config", ".gitattributes", ".gitconfig", ".editorconfig"},
 	},
-	{
+	"java": {
 		ID:         "java",
 		Name:       "Java",
 		Aliases:    []string{"java"},
 		Extensions: []string{".java", ".jav"},
 		Filenames:  []string{},
 	},
-	{
+	"javascript": {
 		ID:         "javascript",
 		Name:       "JavaScript",
 		Aliases:    []string{"javascript", "js"},
 		Extensions: []string{".js", ".es6", ".jsx", ".mjs", ".cjs"},
 		Filenames:  []string{"jakefile"},
 	},
-	{
+	"julia": {
 		ID:         "julia",
 		Name:       "Julia",
 		Aliases:    []string{"Julia"},
 		Extensions: []string{".jl"},
 		Filenames:  []string{},
 	},
-	{
+	"kotlin": {
 		ID:         "kotlin",
 		Name:       "Kotlin",
 		Aliases:    []string{"kotlin"},
 		Extensions: []string{".kt"},
 		Filenames:  []string{},
 	},
-	{
+	"less": {
 		ID:         "less",
 		Name:       "Less",
 		Aliases:    []string{"less"},
 		Extensions: []string{".less"},
 		Filenames:  []string{},
 	},
-	{
+	"lexon": {
 		ID:         "lexon",
 		Name:       "Lexon",
 		Aliases:    []string{},
 		Extensions: []string{".lex"},
 		Filenames:  []string{},
 	},
-	{
+	"liquid": {
 		ID:         "liquid",
 		Name:       "Liquid",
 		Aliases:    []string{"liquid"},
 		Extensions: []string{".liquid", ".html.liquid"},
 		Filenames:  []string{},
 	},
-	{
+	"lua": {
 		ID:         "lua",
 		Name:       "Lua",
 		Aliases:    []string{"lua"},
 		Extensions: []string{".lua"},
 		Filenames:  []string{},
 	},
-	{
+	"m3": {
 		ID:         "m3",
 		Name:       "Modula-3",
 		Aliases:    []string{"Modula3", "modula3", "m3"},
 		Extensions: []string{".m3", ".i3", ".mg", ".ig"},
 		Filenames:  []string{},
 	},
-	{
+	"markdown": {
 		ID:         "markdown",
 		Name:       "Markdown",
 		Aliases:    []string{"markdown"},
 		Extensions: []string{".md", ".markdown", ".mdown", ".mkdn", ".mkd", ".mdwn", ".mdtxt", ".mdtext"},
 		Filenames:  []string{},
 	},
-	{
+	"mips": {
 		ID:         "mips",
 		Name:       "MIPS",
 		Aliases:    []string{"MIPS-V"},
 		Extensions: []string{".s"},
 		Filenames:  []string{},
 	},
-	{
+	"msdax": {
 		ID:         "msdax",
 		Name:       "DAX",
 		Aliases:    []string{"MSDAX"},
 		Extensions: []string{".dax", ".msdax"},
 		Filenames:  []string{},
 	},
-	{
+	"mysql": {
 		ID:         "mysql",
 		Name:       "MySQL",
 		Aliases:    []string{"mysql"},
 		Extensions: []string{},
 		Filenames:  []string{},
 	},
-	{
+	"objective-c": {
 		ID:         "objective-c",
 		Name:       "Objective-C",
 		Aliases:    []string{},
 		Extensions: []string{".m"},
 		Filenames:  []string{},
 	},
-	{
+	"pascal": {
 		ID:         "pascal",
 		Name:       "Pascal",
 		Aliases:    []string{"pas"},
 		Extensions: []string{".pas", ".p", ".pp"},
 		Filenames:  []string{},
 	},
-	{
+	"pascaligo": {
 		ID:         "pascaligo",
 		Name:       "Pascaligo",
 		Aliases:    []string{"ligo"},
 		Extensions: []string{".ligo"},
 		Filenames:  []string{},
 	},
-	{
+	"perl": {
 		ID:         "perl",
 		Name:       "Perl",
 		Aliases:    []string{"pl"},
 		Extensions: []string{".pl"},
 		Filenames:  []string{},
 	},
-	{
+	"pgsql": {
 		ID:         "pgsql",
 		Name:       "PostgreSQL",
 		Aliases:    []string{"postgres", "pg", "postgre"},
 		Extensions: []string{},
 		Filenames:  []string{},
 	},
-	{
+	"php": {
 		ID:         "php",
 		Name:       "PHP",
 		Aliases:    []string{"php"},
 		Extensions: []string{".php", ".php4", ".php5", ".phtml", ".ctp"},
 		Filenames:  []string{},
 	},
-	{
+	"postiats": {
 		ID:         "postiats",
 		Name:       "ATS",
 		Aliases:    []string{"ATS/Postiats"},
 		Extensions: []string{".dats", ".sats", ".hats"},
 		Filenames:  []string{},
 	},
-	{
+	"powerquery": {
 		ID:         "powerquery",
 		Name:       "PQ",
 		Aliases:    []string{"M", "Power Query", "Power Query M"},
 		Extensions: []string{".pq", ".pqm"},
 		Filenames:  []string{},
 	},
-	{
+	"powershell": {
 		ID:         "powershell",
 		Name:       "PowerShell",
 		Aliases:    []string{"powershell", "ps", "ps1"},
 		Extensions: []string{".ps1", ".psm1", ".psd1"},
 		Filenames:  []string{},
 	},
-	{
+	"proto": {
 		ID:         "proto",
 		Name:       "Protobuf",
 		Aliases:    []string{"Protocol Buffers"},
 		Extensions: []string{".proto"},
 		Filenames:  []string{},
 	},
-	{
+	"pug": {
 		ID:         "pug",
 		Name:       "Pug",
 		Aliases:    []string{"Jade", "jade"},
 		Extensions: []string{".jade", ".pug"},
 		Filenames:  []string{},
 	},
-	{
+	"python": {
 		ID:         "python",
 		Name:       "Python",
 		Aliases:    []string{"py"},
 		Extensions: []string{".py", ".rpy", ".pyw", ".cpy", ".gyp", ".gypi"},
 		Filenames:  []string{},
 	},
-	{
+	"qsharp": {
 		ID:         "qsharp",
 		Name:       "Q#",
 		Aliases:    []string{"qsharp"},
 		Extensions: []string{".qs"},
 		Filenames:  []string{},
 	},
-	{
+	"r": {
 		ID:         "r",
 		Name:       "R",
 		Aliases:    []string{"r"},
 		Extensions: []string{".r", ".rhistory", ".rmd", ".rprofile", ".rt"},
 		Filenames:  []string{},
 	},
-	{
+	"razor": {
 		ID:         "razor",
 		Name:       "Razor",
 		Aliases:    []string{"razor"},
 		Extensions: []string{".cshtml"},
 		Filenames:  []string{},
 	},
-	{
+	"redis": {
 		ID:         "redis",
 		Name:       "Redis",
 		Aliases:    []string{},
 		Extensions: []string{".redis"},
 		Filenames:  []string{},
 	},
-	{
+	"redshift": {
 		ID:         "redshift",
 		Name:       "Redshift",
 		Aliases:    []string{"redshift"},
 		Extensions: []string{},
 		Filenames:  []string{},
 	},
-	{
+	"restructuredtext": {
 		ID:         "restructuredtext",
 		Name:       "ReStructuredText",
 		Aliases:    []string{"restructuredtext"},
 		Extensions: []string{".rst"},
 		Filenames:  []string{},
 	},
-	{
+	"ruby": {
 		ID:         "ruby",
 		Name:       "Ruby",
 		Aliases:    []string{"rb"},
 		Extensions: []string{".rb", ".rbx", ".rjs", ".gemspec", ".pp"},
 		Filenames:  []string{"rakefile", "Gemfile"},
 	},
-	{
+	"rust": {
 		ID:         "rust",
 		Name:       "Rust",
 		Aliases:    []string{"rust"},
 		Extensions: []string{".rs", ".rlib"},
 		Filenames:  []string{},
 	},
-	{
+	"sb": {
 		ID:         "sb",
 		Name:       "Small Basic",
 		Aliases:    []string{"sb"},
 		Extensions: []string{".sb"},
 		Filenames:  []string{},
 	},
-	{
+	"scala": {
 		ID:         "scala",
 		Name:       "Scala",
 		Aliases:    []string{"scala", "SBT", "Sbt", "sbt", "Dotty", "dotty"},
 		Extensions: []string{".scala", ".sc", ".sbt"},
 		Filenames:  []string{},
 	},
-	{
+	"scheme": {
 		ID:         "scheme",
 		Name:       "Scheme",
 		Aliases:    []string{"Scheme"},
 		Extensions: []string{".scm", ".ss", ".sch", ".rkt"},
 		Filenames:  []string{},
 	},
-	{
+	"scss": {
 		ID:         "scss",
 		Name:       "Sass",
 		Aliases:    []string{"sass", "scss"},
 		Extensions: []string{".scss"},
 		Filenames:  []string{},
 	},
-	{
+	"shell": {
 		ID:         "shell",
 		Name:       "Shell",
 		Aliases:    []string{"sh"},
 		Extensions: []string{".sh", ".bash"},
 		Filenames:  []string{},
 	},
-	{
+	"sol": {
 		ID:         "sol",
 		Name:       "Solidity",
 		Aliases:    []string{"solidity", "Solidity"},
 		Extensions: []string{".sol"},
 		Filenames:  []string{},
 	},
-	{
+	"aes": {
 		ID:         "aes",
 		Name:       "Sophia",
 		Aliases:    []string{"sophia", "Sophia"},
 		Extensions: []string{".aes"},
 		Filenames:  []string{},
 	},
-	{
+	"sparql": {
 		ID:         "sparql",
 		Name:       "SPARQL",
 		Aliases:    []string{"SPARQL"},
 		Extensions: []string{".rq"},
 		Filenames:  []string{},
 	},
-	{
+	"sql": {
 		ID:         "sql",
 		Name:       "SQL",
 		Aliases:    []string{},
 		Extensions: []string{".sql"},
 		Filenames:  []string{},
 	},
-	{
+	"st": {
 		ID:         "st",
 		Name:       "StructuredText",
 		Aliases:    []string{"scl", "stl"},
 		Extensions: []string{".st", ".iecst", ".iecplc", ".lc3lib"},
 		Filenames:  []string{},
 	},
-	{
+	"swift": {
 		ID:         "swift",
 		Name:       "Swift",
 		Aliases:    []string{"swift"},
 		Extensions: []string{".swift"},
 		Filenames:  []string{},
 	},
-	{
+	"systemverilog": {
 		ID:         "systemverilog",
 		Name:       "SV",
 		Aliases:    []string{"sv", "SystemVerilog", "systemverilog"},
 		Extensions: []string{".sv", ".svh"},
 		Filenames:  []string{},
 	},
-	{
+	"verilog": {
 		ID:         "verilog",
 		Name:       "V",
 		Aliases:    []string{"v", "Verilog", "verilog"},
 		Extensions: []string{".v", ".vh"},
 		Filenames:  []string{},
 	},
-	{
+	"tcl": {
 		ID:         "tcl",
 		Name:       "Tcl",
 		Aliases:    []string{"Tcl", "tcltk", "TclTk", "tcl/tk", "Tcl/Tk"},
 		Extensions: []string{".tcl"},
 		Filenames:  []string{},
 	},
-	{
+	"twig": {
 		ID:         "twig",
 		Name:       "Twig",
 		Aliases:    []string{"twig"},
 		Extensions: []string{".twig"},
 		Filenames:  []string{},
 	},
-	{
+	"typescript": {
 		ID:         "typescript",
 		Name:       "TypeScript",
 		Aliases:    []string{"ts", "typescript"},
 		Extensions: []string{".ts", ".tsx"},
 		Filenames:  []string{},
 	},
-	{
+	"vb": {
 		ID:         "vb",
 		Name:       "Visual Basic",
 		Aliases:    []string{"vb"},
 		Extensions: []string{".vb"},
 		Filenames:  []string{},
 	},
-	{
+	"xml": {
 		ID:         "xml",
 		Name:       "XML",
 		Aliases:    []string{"xml"},
 		Extensions: []string{".xml", ".dtd", ".ascx", ".csproj", ".config", ".wxi", ".wxl", ".wxs", ".xaml", ".svg", ".svgz", ".opf", ".xsl"},
 		Filenames:  []string{},
 	},
-	{
+	"yaml": {
 		ID:         "yaml",
 		Name:       "YAML",
 		Aliases:    []string{"yaml", "YML", "yml"},
