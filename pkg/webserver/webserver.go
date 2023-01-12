@@ -370,7 +370,7 @@ func (ws *WebServer) Browse(c *fiber.Ctx) error {
 			t.AppendRow(table.Row{
 				paste.Filename,
 				paste.CreatedAt.Format("2006-01-02 15:04:05 -07:00"),
-				c.BaseURL() + ws.RelativeURLRoot + ws.Hasher.EncodeAtomic(paste.ID),
+				c.BaseURL() + ws.RelativeURLRoot + "/" + ws.Hasher.EncodeAtomic(paste.ID),
 			})
 		}
 
@@ -381,7 +381,7 @@ func (ws *WebServer) Browse(c *fiber.Ctx) error {
 
 			t.AppendFooter(table.Row{
 				"Prev page",
-				c.BaseURL() + ws.RelativeURLRoot + newQuery.String(),
+				c.BaseURL() + ws.RelativeURLRoot + "/browse?" + newQuery.String(),
 			})
 		}
 		if page < paginatedPasteList.Pagination.TotalPages {
@@ -391,7 +391,7 @@ func (ws *WebServer) Browse(c *fiber.Ctx) error {
 
 			t.AppendFooter(table.Row{
 				"Next page",
-				c.BaseURL() + ws.RelativeURLRoot + newQuery.String(),
+				c.BaseURL() + ws.RelativeURLRoot + "/browse?" + newQuery.String(),
 			})
 		}
 

@@ -305,7 +305,7 @@ func (sql *SQL) PaginatePastes( // revive:disable-line:function-result-limit
 	if err != nil {
 		return nil, err
 	}
-	totalPages := total / perPage
+	totalPages := int(math.Ceil(float64(total) / float64(perPage)))
 
 	// SELECT * ...
 	rows, err := sql.Query(listQuery, sqlConditions...)
