@@ -67,9 +67,9 @@ Pasteur is a simple & stupid web pastebin.
 Creates a new paste.
 Request fields:
 
-+--------------+--------+----------+-----------+------------------------------------------+-
++--------------+--------+----------+-----------+-------------------------------------------+
 | Name         | Type   | Required | Default   | Description                               |
-+--------------+--------+----------+-----------+------------------------------------------+-
++--------------+--------+----------+-----------+-------------------------------------------+
 | filename     | string | Yes      | paste.txt | Filename.                                 |
 | content      | string | Yes      |           | Content.                                  |
 | private      | int    | No       | 0         | Pass 1 to hide in /browse.                |
@@ -378,21 +378,17 @@ func (ws *WebServer) Browse(c *fiber.Ctx) error {
 			newQuery := &fasthttp.Args{}
 			c.Request().URI().QueryArgs().CopyTo(newQuery)
 			newQuery.Set("page", fmt.Sprint(page-1))
+			prevLink := c.BaseURL() + ws.RelativeURLRoot + "/browse?" + newQuery.String()
 
-			t.AppendFooter(table.Row{
-				"Prev page",
-				c.BaseURL() + ws.RelativeURLRoot + "/browse?" + newQuery.String(),
-			})
+			t.AppendFooter(table.Row{"Prev page", prevLink})
 		}
 		if page < paginatedPasteList.Pagination.TotalPages {
 			newQuery := &fasthttp.Args{}
 			c.Request().URI().QueryArgs().CopyTo(newQuery)
 			newQuery.Set("page", fmt.Sprint(page+1))
+			nextLink := c.BaseURL() + ws.RelativeURLRoot + "/browse?" + newQuery.String()
 
-			t.AppendFooter(table.Row{
-				"Next page",
-				c.BaseURL() + ws.RelativeURLRoot + "/browse?" + newQuery.String(),
-			})
+			t.AppendFooter(table.Row{"Next page", nextLink})
 		}
 
 		return c.SendString(t.Render() + "\n")
