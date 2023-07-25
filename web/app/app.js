@@ -96,6 +96,16 @@ document.addEventListener('DOMContentLoaded', () => {
       language: codeEditor.dataset.language
     });
 
+    monacoEditor.addAction({
+      id: 'toggle-wrap',
+      label: 'Toggle Word Wrap',
+      run: function(editor) {
+        editor.updateOptions({
+          wordWrap: editor.getRawOptions().wordWrap == 'on' ? 'off' : 'on'
+        });
+      }
+    });
+
     monacoEditor.getModel().onDidChangeContent(() => {
       codeEditor.value = monacoEditor.getValue();
       codeEditor.dispatchEvent(new Event('change'));

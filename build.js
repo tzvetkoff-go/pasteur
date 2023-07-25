@@ -42,7 +42,7 @@ var Languages = map[string]Language{
 \t\tFilenames:  []string{},
 \t},
 `
-glob('./node_modules/monaco-editor/esm/vs/basic-languages/*/*.contribution.js').forEach((file) => {
+glob('./node_modules/monaco-editor/esm/vs/basic-languages/*/*.contribution.js').sort().forEach((file) => {
   const content = readFileSync(file).toString();
   const regexp = /registerLanguage(\(.*?^}\));/gms;
   const matches = content.matchAll(regexp);
@@ -112,7 +112,7 @@ esbuild.build({
 // Application
 //
 
-esbuild.build({
+const appContext = {
   entryPoints: [
     './web/app/app.js'
   ],
@@ -124,6 +124,13 @@ esbuild.build({
   loader: {
     '.ttf': 'file'
   },
-  plugins: [sassPlugin()],
-  watch: watch
-});
+  plugins: [sassPlugin()]
+};
+
+esbuild.build(appContext);
+
+if (watch) {
+  esbuild.context(appContext).then(function(ctx) {
+    ctx.watch();
+  });
+}

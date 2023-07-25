@@ -267,7 +267,7 @@ var Languages = map[string]Language{
 		ID:         "kotlin",
 		Name:       "Kotlin",
 		Aliases:    []string{"kotlin"},
-		Extensions: []string{".kt"},
+		Extensions: []string{".kt", ".kts"},
 		Filenames:  []string{},
 	},
 	"less": {
@@ -358,7 +358,7 @@ var Languages = map[string]Language{
 		ID:         "perl",
 		Name:       "Perl",
 		Aliases:    []string{"pl"},
-		Extensions: []string{".pl"},
+		Extensions: []string{".pl", ".pm"},
 		Filenames:  []string{},
 	},
 	"pgsql": {
@@ -582,7 +582,7 @@ var Languages = map[string]Language{
 		ID:         "typescript",
 		Name:       "TypeScript",
 		Aliases:    []string{"ts", "typescript"},
-		Extensions: []string{".ts", ".tsx"},
+		Extensions: []string{".ts", ".tsx", ".cts", ".mts"},
 		Filenames:  []string{},
 	},
 	"vb": {
@@ -592,11 +592,18 @@ var Languages = map[string]Language{
 		Extensions: []string{".vb"},
 		Filenames:  []string{},
 	},
+	"wgsl": {
+		ID:         "wgsl",
+		Name:       "WebGPU Shading Language",
+		Aliases:    []string{"WGSL", "wgsl"},
+		Extensions: []string{".wgsl"},
+		Filenames:  []string{},
+	},
 	"xml": {
 		ID:         "xml",
 		Name:       "XML",
 		Aliases:    []string{"xml"},
-		Extensions: []string{".xml", ".dtd", ".ascx", ".csproj", ".config", ".wxi", ".wxl", ".wxs", ".xaml", ".svg", ".svgz", ".opf", ".xsl"},
+		Extensions: []string{".xml", ".xsd", ".dtd", ".ascx", ".csproj", ".config", ".props", ".targets", ".wxi", ".wxl", ".wxs", ".xaml", ".svg", ".svgz", ".opf", ".xslt", ".xsl"},
 		Filenames:  []string{},
 	},
 	"yaml": {
