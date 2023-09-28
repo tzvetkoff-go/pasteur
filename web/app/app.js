@@ -95,7 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
       tabSize: 4,
       readOnly: codeEditor.readOnly,
       language: codeEditor.dataset.language,
-      wordWrap: 'on'
+      wordWrap: 'on',
+      unicodeHighlight: {
+        ambiguousCharacters: codeEditor.dataset.language != 'plain',
+      },
     });
 
     monacoEditor.addAction({
@@ -146,6 +149,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const filetypeSelect = document.getElementById('filetype')
   if (filetypeSelect !== null && monacoEditor !== null) {
     filetypeSelect.onchange = () => {
+      monacoEditor.updateOptions({
+        unicodeHighlight: {
+          ambiguousCharacters: filetypeSelect.value != 'plain'
+        }
+      });
       monaco.editor.setModelLanguage(monacoEditor.getModel(), filetypeSelect.value);
     };
   }
