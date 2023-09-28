@@ -27,6 +27,7 @@ import (
 	"github.com/tzvetkoff-go/pasteur/pkg/model"
 	"github.com/tzvetkoff-go/pasteur/pkg/monaco"
 	"github.com/tzvetkoff-go/pasteur/pkg/stringutil"
+	"github.com/tzvetkoff-go/pasteur/pkg/version"
 )
 
 // StaticFSRoot ...
@@ -152,8 +153,11 @@ func New(config *Config) (*WebServer, error) {
 		viewsEngine = html.New(config.TemplatesPath, ".html")
 	}
 
-	// viewsEngine.Reload(true)
-	// viewsEngine.Debug(true)
+	debugFlag := (logger.GetLevel() & logger.LOG_DEBUG) == logger.LOG_DEBUG
+	if debugFlag {
+		viewsEngine.Reload(true)
+		viewsEngine.Debug(true)
+	}
 
 	viewsEngine.AddFunc("list", func(items ...interface{}) []interface{} {
 		result := []interface{}{}
@@ -273,6 +277,7 @@ func (ws *WebServer) Index(c *fiber.Ctx) error {
 		"AbsoluteURLRoot": ws.AbsoluteURLRoot,
 		"ActiveMenu":      1,
 		"Languages":       monaco.Languages,
+		"Version":         version.Version,
 		"Paste":           model.NewPaste(),
 	}, "layout/layout")
 }
@@ -301,6 +306,7 @@ func (ws *WebServer) Show(c *fiber.Ctx) error {
 		"AbsoluteURLRoot": ws.AbsoluteURLRoot,
 		"ActiveMenu":      2,
 		"Languages":       monaco.Languages,
+		"Version":         version.Version,
 		"Paste":           paste,
 	}, "layout/layout")
 }
@@ -399,6 +405,7 @@ func (ws *WebServer) Browse(c *fiber.Ctx) error {
 		"AbsoluteURLRoot": ws.AbsoluteURLRoot,
 		"ActiveMenu":      2,
 		"Languages":       monaco.Languages,
+		"Version":         version.Version,
 		"Pastes":          paginatedPasteList.Pastes,
 		"Pagination":      paginatedPasteList.Pagination,
 		"Query":           c.Request().URI().QueryArgs(),

@@ -82,7 +82,7 @@ func RequestId() func(*fiber.Ctx) error {
 
 // RequestLogger ...
 func RequestLogger() func(*fiber.Ctx) error {
-	debugFlag := (logger.GetLevel() & logger.LOG_DEBUG) == logger.LOG_DEBUG
+	// debugFlag := (logger.GetLevel() & logger.LOG_DEBUG) == logger.LOG_DEBUG
 
 	fn := func(c *fiber.Ctx) error {
 		fields := logger.Fields{}
@@ -118,10 +118,10 @@ func RequestLogger() func(*fiber.Ctx) error {
 		fields["request_size"] = len(c.Request().Body())
 		fields["response_size"] = len(c.Response().Body())
 
-		if debugFlag && !strings.HasPrefix(requestPath, "/assets/") && requestPath != "/favicon.ico" {
-			fields["request_body"] = strings.TrimSpace(string(c.Request().Body()))
-			fields["response_body"] = strings.TrimSpace(string(c.Response().Body()))
-		}
+		// if debugFlag && !strings.HasPrefix(requestPath, "/assets/") && requestPath != "/favicon.ico" {
+		// 	fields["request_body"] = strings.TrimSpace(string(c.Request().Body()))
+		// 	fields["response_body"] = strings.TrimSpace(string(c.Response().Body()))
+		// }
 
 		if c.Response().StatusCode() >= 400 {
 			logger.Error("", fields)

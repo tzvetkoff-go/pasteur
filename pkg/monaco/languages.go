@@ -312,6 +312,13 @@ var Languages = map[string]Language{
 		Extensions: []string{".md", ".markdown", ".mdown", ".mkdn", ".mkd", ".mdwn", ".mdtxt", ".mdtext"},
 		Filenames:  []string{},
 	},
+	"mdx": {
+		ID:         "mdx",
+		Name:       "MDX",
+		Aliases:    []string{"mdx"},
+		Extensions: []string{".mdx"},
+		Filenames:  []string{},
+	},
 	"mips": {
 		ID:         "mips",
 		Name:       "MIPS",
@@ -540,7 +547,7 @@ var Languages = map[string]Language{
 		ID:         "st",
 		Name:       "StructuredText",
 		Aliases:    []string{"scl", "stl"},
-		Extensions: []string{".st", ".iecst", ".iecplc", ".lc3lib"},
+		Extensions: []string{".st", ".iecst", ".iecplc", ".lc3lib", ".TcPOU", ".TcDUT", ".TcGVL", ".TcIO"},
 		Filenames:  []string{},
 	},
 	"swift": {

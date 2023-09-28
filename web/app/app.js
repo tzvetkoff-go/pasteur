@@ -28,30 +28,30 @@ document.addEventListener('DOMContentLoaded', () => {
     base: 'vs-dark',
     inherit: true,
     rules: [{
-      background: '#2a2e3a',
+      background: '#04121b',
     }],
     colors: {
-      'editor.background': '#2a2e3a',
-      'editor.foreground': '#bbc0ca',
-      'editor.inactiveSelectionBackground': '#516939',
-      'editor.lineHighlightBackground': '#364626',
-      'editor.selectionBackground': '#5f7b42',
-      'editor.selectionForeground': '#5f7b42',
-      'editorLineNumber.background': '#2a2e3a',
-      'editorLineNumber.foreground': '#9aa0af',
-      'editorWidget.background': '#383c4a',
-      'editorWidget.border': '#454a57',
-      'input.background': '#292d39',
-      'input.border': '#454a57',
-      'input.foreground': '#d5dbe6',
-      'scrollbar.shadow': '#00000060"',
-      'progressBar.background': '#87ab63',
+      'editor.background': '#04121b',
+      'editor.foreground': '#d4dbdf',
+      'editor.inactiveSelectionBackground': '#14507d',
+      'editor.lineHighlightBackground': '#114368',
+      'editor.selectionBackground': '#175d92',
+      'editor.selectionForeground': '#175d92',
+      'editorLineNumber.background': '#04121b',
+      'editorLineNumber.foreground': '#677e8d',
+      'editorWidget.background': '#0c1a24',
+      'editorWidget.border': '#082437',
+      'input.background': '#082437',
+      'input.border': '#1d4057',
+      'input.foreground': '#ffffff',
+      'scrollbar.shadow': '#00000060',
+      'progressBar.background': '#4793cc',
     }
   });
 
   // Editor environment
   window.MonacoEnvironment = {
-    getWorkerUrl: function (moduleId, label) {
+    getWorkerUrl: (moduleId, label) => {
       if (label === 'json') {
         return window.RelativeURLRoot + '/assets/vs/language/json/json.worker.js';
       }
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     monacoEditor.addAction({
       id: 'toggle-wrap',
       label: 'Toggle Word Wrap',
-      run: function(editor) {
+      run: (editor) => {
         editor.updateOptions({
           wordWrap: editor.getRawOptions().wordWrap == 'on' ? 'off' : 'on'
         });
