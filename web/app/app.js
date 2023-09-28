@@ -41,11 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
       'editorLineNumber.foreground': '#677e8d',
       'editorWidget.background': '#0c1a24',
       'editorWidget.border': '#082437',
+      'editorRuler.foreground': '#082437',
       'input.background': '#082437',
       'input.border': '#1d4057',
       'input.foreground': '#ffffff',
       'scrollbar.shadow': '#00000060',
-      'progressBar.background': '#4793cc',
+      'progressBar.background': '#4793cc'
     }
   });
 
@@ -93,7 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
       insertSpaces: true,
       tabSize: 4,
       readOnly: codeEditor.readOnly,
-      language: codeEditor.dataset.language
+      language: codeEditor.dataset.language,
+      wordWrap: 'on'
     });
 
     monacoEditor.addAction({
