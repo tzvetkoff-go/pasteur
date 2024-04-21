@@ -275,6 +275,10 @@ article {
         border: 1px solid #082437;
         border-radius: 4px;
 
+        > .overflow-guard {
+          border-radius: 4px;
+        }
+
         .monaco-scrollable-element > .scrollbar > .slider {
           background: var(--color-scrollbar) !important;
         }

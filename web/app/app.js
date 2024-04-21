@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
       'editorLineNumber.foreground': '#677e8d',
       'editorWidget.background': '#0c1a24',
       'editorWidget.border': '#082437',
+      'focusBorder': '#082437',
       'editorRuler.foreground': '#082437',
       'input.background': '#082437',
       'input.border': '#1d4057',
