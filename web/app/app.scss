@@ -7,6 +7,7 @@
   --color-header-menu-text: #ffffff;
   --color-header-menu-text-hover: #ffffff;
   --color-header-menu-bg-hover: #304f64;
+  --color-header-menu-bg-active: #082437;
   --color-header-border: #082437;
 
   --color-footer-bg: #010609;
@@ -119,7 +120,12 @@ header {
 
         &.active {
           a {
-            background: var(--color-header-menu-bg-hover);
+            background: var(--color-header-menu-bg-active);
+
+            &:hover {
+              background: var(--color-header-menu-bg-hover);
+              color: var(--color-header-menu-text-hover);
+            }
           }
         }
       }
