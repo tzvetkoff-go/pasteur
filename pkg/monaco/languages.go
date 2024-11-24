@@ -92,7 +92,7 @@ var Languages = map[string]Language{
 		ID:         "csp",
 		Name:       "CSP",
 		Aliases:    []string{"csp"},
-		Extensions: []string{},
+		Extensions: []string{".csp"},
 		Filenames:  []string{},
 	},
 	"css": {
@@ -590,6 +590,13 @@ var Languages = map[string]Language{
 		Name:       "TypeScript",
 		Aliases:    []string{"ts", "typescript"},
 		Extensions: []string{".ts", ".tsx", ".cts", ".mts"},
+		Filenames:  []string{},
+	},
+	"typespec": {
+		ID:         "typespec",
+		Name:       "TypeSpec",
+		Aliases:    []string{},
+		Extensions: []string{".tsp"},
 		Filenames:  []string{},
 	},
 	"vb": {

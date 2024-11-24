@@ -24,6 +24,14 @@ var Migrations = []Migration{
 			if err != nil {
 				return err
 			}
+
+			_, err = sql.Exec(stringutil.FormatQuery(`
+				CREATE INDEX index_pastes_on_filetype ON pastes (filetype);
+			`))
+			if err != nil {
+				return err
+			}
+
 			_, err = sql.Exec(stringutil.FormatQuery(`
 				INSERT INTO pastes (
 					private, filename, filetype, indent_style, indent_size, content, created_at

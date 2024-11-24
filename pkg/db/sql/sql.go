@@ -108,8 +108,8 @@ func (sql *SQL) Migrate() error {
 	return nil
 }
 
-// Exec ...
-func (sql *SQL) Exec(q string, args ...interface{}) (dbSql.Result, error) {
+// PrepareWithCache ...
+func (sql *SQL) PrepareWithCache(q string) (*dbSql.Stmt, error) {
 	if _, ok := sql.StatementCache[q]; !ok {
 		stmt, err := sql.DB.Prepare(q)
 		if err != nil {
@@ -121,25 +121,29 @@ func (sql *SQL) Exec(q string, args ...interface{}) (dbSql.Result, error) {
 		sql.Mux.Unlock()
 	}
 
+	return sql.StatementCache[q], nil
+}
+
+// Exec ...
+func (sql *SQL) Exec(q string, args ...interface{}) (dbSql.Result, error) {
+	stmt, err := sql.PrepareWithCache(q)
+	if err != nil {
+		return nil, err
+	}
+
 	logger.Debug("", logger.Fields{
 		"query":      q,
 		"query-args": args,
 	})
 
-	return sql.StatementCache[q].Exec(args...)
+	return stmt.Exec(args...)
 }
 
 // QueryRow ...
 func (sql *SQL) QueryRow(q string, args ...interface{}) (*dbSql.Row, error) {
-	if _, ok := sql.StatementCache[q]; !ok {
-		stmt, err := sql.DB.Prepare(q)
-		if err != nil {
-			return nil, err
-		}
-
-		sql.Mux.Lock()
-		sql.StatementCache[q] = stmt
-		sql.Mux.Unlock()
+	stmt, err := sql.PrepareWithCache(q)
+	if err != nil {
+		return nil, err
 	}
 
 	logger.Debug("", logger.Fields{
@@ -147,21 +151,15 @@ func (sql *SQL) QueryRow(q string, args ...interface{}) (*dbSql.Row, error) {
 		"query-args": args,
 	})
 
-	row := sql.StatementCache[q].QueryRow(args...)
+	row := stmt.QueryRow(args...)
 	return row, nil
 }
 
 // Query ...
 func (sql *SQL) Query(q string, args ...interface{}) (*dbSql.Rows, error) {
-	if _, ok := sql.StatementCache[q]; !ok {
-		stmt, err := sql.DB.Prepare(q)
-		if err != nil {
-			return nil, err
-		}
-
-		sql.Mux.Lock()
-		sql.StatementCache[q] = stmt
-		sql.Mux.Unlock()
+	stmt, err := sql.PrepareWithCache(q)
+	if err != nil {
+		return nil, err
 	}
 
 	logger.Debug("", logger.Fields{
@@ -169,7 +167,7 @@ func (sql *SQL) Query(q string, args ...interface{}) (*dbSql.Rows, error) {
 		"query-args": args,
 	})
 
-	return sql.StatementCache[q].Query(args...)
+	return stmt.Query(args...)
 }
 
 // CreatePasteQuery ...
