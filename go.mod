@@ -7,7 +7,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/gofiber/template/html/v2 v2.1.2
 	github.com/jackc/pgx/v4 v4.18.3
-	github.com/jedib0t/go-pretty/v6 v6.6.2
+	github.com/jedib0t/go-pretty/v6 v6.6.3
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/speps/go-hashids v2.0.0+incompatible
 	github.com/spf13/cobra v1.8.1
