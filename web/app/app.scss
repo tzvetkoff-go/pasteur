@@ -209,13 +209,14 @@ article {
 
     .control {
       width: 400px;
-      margin: 10px 0;
+      margin: 10px 0 0;
       display: inline-block;
 
       > label {
-        display: inline-block;
+        float: left;
+        height: 39px;
         width: 120px;
-        padding: 0;
+        padding: 8px 8px 0 0;
         color: var(--color-body-input-text);
         text-align: right;
         font: normal 13px/21px var(--font-face-monospace);
@@ -250,7 +251,7 @@ article {
         margin: 0 10px 0 0;
 
         &.indent-style-select {
-          width: 150px;
+          width: 178px;
         }
 
         &.indent-size-select {
@@ -260,6 +261,10 @@ article {
 
       > .select2 {
         margin: 0 10px 0 0;
+      }
+
+      select.indent-size-select + .select2 {
+        margin: 0 !important;
       }
 
       > button {
