@@ -3,6 +3,9 @@
 //
 
 :root {
+  --font-face-body: '-apple-system', 'Segoe UI', 'system-ui', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'Liberation Sans', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla';
+  --font-face-monospace: 'Consolas','Menlo','Monaco','Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','monospace','serif';
+
   --color-header-bg: #010609;
   --color-header-menu-text: #ffffff;
   --color-header-menu-text-hover: #ffffff;
@@ -29,6 +32,15 @@
 
   --color-body-list-item-bg: #010609;
   --color-body-list-item-bg-hover: #111619;
+
+  --color-body-list-table-border: #082437;
+  --color-body-list-table-bg: #061825;
+  --color-body-list-table-bg-alt: #111f28;
+  --color-body-list-table-bg-hover: #0b3049;
+  --color-body-list-table-heading: #ffffff;
+  --color-body-list-table-link-text: #ffffff;
+  --color-body-list-table-link-text-alt: #a0a0a0;
+  --color-body-list-table-link-text-hover: #4793cc;
 
   --color-scrollbar: #4793cc;
   --color-scrollbar-hover: #4793cc;
@@ -77,7 +89,7 @@ html {
     background: var(--color-body-bg);
     color: var(--color-body-text);
     height: 100%;
-    font: normal 15px/20px '-apple-system', 'Segoe UI', 'system-ui', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'Liberation Sans', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla';
+    font: normal 15px/20px var(--font-face-body);
     min-height: 600px;
   }
 }
@@ -103,7 +115,7 @@ header {
       .item {
         float: left;
 
-        a {
+        a, a:visited {
           display: block;
           margin: 7px 5px 0 0;
           padding: 8px 13px;
@@ -119,7 +131,7 @@ header {
         }
 
         &.active {
-          a {
+          a, a:visited {
             background: var(--color-header-menu-bg-active);
 
             &:hover {
@@ -161,7 +173,7 @@ footer {
       font-style: normal;
     }
 
-    a {
+    a, a:visited {
       color: var(--color-body-link-text);
       text-decoration: none;
 
@@ -185,7 +197,7 @@ article {
     position: relative;
     margin: 0 auto;
 
-    a {
+    a, a:visited {
       color: var(--color-body-link-text);
       text-decoration: none;
 
@@ -206,11 +218,11 @@ article {
         padding: 0;
         color: var(--color-body-input-text);
         text-align: right;
-        font: normal 13px/21px 'Consolas','Menlo','Monaco','Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','monospace','serif';
+        font: normal 13px/21px var(--font-face-monospace);
       }
 
       > input[type='text'] {
-        width: 222px;
+        width: 250px;
         padding: 8px;
         background: var(--color-body-input-bg);
         color: var(--color-body-input-text);
@@ -218,7 +230,7 @@ article {
         border-radius: 4px;
         outline: none;
         box-shadow: #00000013 0 1px 2px inset;
-        font: normal 13px/21px 'Consolas','Menlo','Monaco','Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','monospace','serif';
+        font: normal 13px/21px var(--font-face-monospace);
 
         &::placeholder {
           color: var(--color-body-input-placeholder);
@@ -234,7 +246,7 @@ article {
       }
 
       > select {
-        width: 222px;
+        width: 250px;
         margin: 0 10px 0 0;
 
         &.indent-style-select {
@@ -256,7 +268,7 @@ article {
         color: #ffffff;
         border: 1px solid #454a57;
         border-radius: 6px;
-        font: normal 13px/21px 'Consolas','Menlo','Monaco','Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','monospace','serif';
+        font: normal 13px/21px var(--font-face-monospace);
         cursor: pointer;
 
         &:hover {
@@ -301,13 +313,94 @@ article {
     }
 
     .list {
+      table {
+        width: 100%;
+        margin: 10px 0;
+        padding: 0;
+        border: 1px solid var(--color-body-list-table-border);
+        border-radius: 4px;
+        border-collapse: collapse;
+        font: 13px/21px var(--font-face-monospace);
+        background: var(--color-body-list-table-bg);
+
+        thead {
+          tr {
+            th {
+              padding: 5px;
+              font-weight: bold;
+              text-align: left;
+              background: var(--color-body-list-table-bg);
+              color: var(--color-body-list-table-link-text);
+              border: 1px solid var(--color-body-list-table-border);
+
+              &.filetype,
+              &.datetime {
+                width: 160px;
+                text-align: left;
+                color: var(--color-body-list-table-link-text-alt)
+              }
+            }
+          }
+        }
+
+        tbody {
+          tr {
+            td {
+              padding: 5px;
+              background: var(--color-body-list-table-bg);
+              border: 1px solid var(--color-body-list-table-border);
+
+              a, a:visited {
+                color: var(--color-body-list-table-link-text);
+
+                &:hover {
+                  color: var(--color-body-list-table-link-text-hover);
+                }
+              }
+
+              &.filetype {
+                a, a:visited {
+                  color: var(--color-body-list-table-link-text-alt);
+
+                  &:hover {
+                    color: var(--color-body-list-table-link-text-hover);
+                  }
+                }
+              }
+
+              &.datetime {
+                color: var(--color-body-list-table-link-text-alt);
+
+                abbr {
+                  cursor: help;
+                }
+              }
+            }
+
+            &:nth-of-type(odd) {
+              td {
+                background: var(--color-body-list-table-bg-alt);
+              }
+            }
+
+            &:hover {
+              td {
+                background: var(--color-body-list-table-bg-hover);
+              }
+            }
+          }
+        }
+      }
+
+
+
       ul {
         list-style: none inside none;
 
         li {
           margin: 0 0 10px 0;
 
-          a {
+          a, a:visited {
             display: block;
             padding: 10px;
             border-radius: 4px;
@@ -332,7 +425,8 @@ article {
     }
 
     .paginator {
-      margin: 20px 0 0 0;
+      margin: 20px 0;
+      overflow: auto;
 
       ul {
         float: left;
@@ -345,7 +439,7 @@ article {
           margin: 0;
           padding: 0;
 
-          a {
+          a, a:visited {
             display: block;
             padding: 10px 15px;
             background: var(--color-body-list-item-bg);
@@ -397,7 +491,7 @@ article {
 
     .select2-selection__rendered {
       line-height: 39px;
-      font: normal 13px/36px 'Consolas','Menlo','Monaco','Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','monospace','serif';
+      font: normal 13px/36px var(--font-face-monospace);
     }
 
     .select2-selection__arrow {
@@ -408,7 +502,7 @@ article {
   .select2-dropdown {
     .select2-results {
       .select2-results__option {
-        font: normal 13px/21px 'Consolas','Menlo','Monaco','Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','monospace','serif';
+        font: normal 13px/21px var(--font-face-monospace);
       }
     }
   }
@@ -416,7 +510,7 @@ article {
   .select2-selection--multiple {
     .select2-selection__rendered {
       .select2-selection__choice {
-        font: normal 13px/24px 'Consolas','Menlo','Monaco','Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','monospace','serif';
+        font: normal 13px/24px var(--font-face-monospace);
       }
     }
 

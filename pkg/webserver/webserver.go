@@ -216,8 +216,11 @@ func New(config *Config) (*WebServer, error) {
 
 		return "!!" + filetype
 	})
-	viewsEngine.AddFunc("format_datetime", func(t time.Time) string {
-		return t.Format("2006-01-02 15:04:05 +07:00")
+	viewsEngine.AddFunc("short_datetime", func(t time.Time) string {
+		return t.Format("2006-01-02 15:04:05")
+	})
+	viewsEngine.AddFunc("full_datetime", func(t time.Time) string {
+		return t.Format("2006-01-02 15:04:05 -0700")
 	})
 
 	result.Views = viewsEngine

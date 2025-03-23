@@ -20,20 +20,30 @@
 
     <div class="list">
       {{- if gt (len .Pastes) 0 }}
-      <ul>
-        {{- range $paste := .Pastes }}
-        {{- $id := $paste.ID | hash_encode }}
-        <li>
-          <a href="{{ $.RelativeURLRoot }}/{{ $id }}">
-            <span>{{ $paste.Filename }}</span>
-            <em>
-              Filetype: <b>{{ $paste.Filetype | format_filetype }}</b>,
-              published: <b>{{ $paste.CreatedAt | format_datetime }}</b>
-            </em>
-          </a>
-        </li>
-        {{- end }}
-      </ul>
+      <table>
+        <colgroup>
+          <col />
+          <col />
+          <col />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="filename">Filename</th>
+            <th class="filetype">Filetype</th>
+            <th class="datetime">Datetime</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{- range $paste := .Pastes }}
+          {{- $id := $paste.ID | hash_encode }}
+          <tr>
+            <td class="filename"><a href="{{ $.RelativeURLRoot }}/{{ $id }}">{{ $paste.Filename }}</a></td>
+            <td class="filetype"><a href="{{ $.RelativeURLRoot }}/browse?filetype={{ $paste.Filetype }}">{{ $paste.Filetype | format_filetype }}</a></td>
+            <td class="datetime"><abbr title="{{ $paste.CreatedAt | full_datetime }}">{{ $paste.CreatedAt | short_datetime }}</abbr></td>
+          </tr>
+          {{- end }}
+        </tbody>
+      </table>
       {{- else }}
       <em>Nothing found.</em>
       {{- end }}
