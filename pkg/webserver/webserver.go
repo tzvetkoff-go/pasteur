@@ -4,8 +4,8 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/fs"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -113,6 +113,9 @@ Example:
   $ curl {{root}}/{{id}}
 
 `
+
+// DefaultTimeout ...
+const DefaultTimeout = 10 * time.Second
 
 // New ...
 func New(config *Config) (*WebServer, error) {
@@ -240,11 +243,12 @@ func New(config *Config) (*WebServer, error) {
 		app.Get("/", httplib.Redirect(result.RelativeURLRoot))
 	}
 
-	app.Get(result.RelativeURLRoot, httplib.Timeout(result.Index, 10*time.Second))
-	app.Get(result.RelativeURLRoot+"/browse", httplib.Timeout(result.Browse, 10.*time.Second))
-	app.Get(result.RelativeURLRoot+"/:id.txt", httplib.Timeout(result.ShowRaw, 10*time.Second))
-	app.Get(result.RelativeURLRoot+"/:id", httplib.Timeout(result.Show, 10*time.Second))
-	app.Post(result.AbsoluteURLRoot, httplib.Timeout(result.Create, 10*time.Second))
+	app.Get(result.RelativeURLRoot, httplib.Timeout(result.Index, DefaultTimeout))
+	app.Get(result.RelativeURLRoot+"/browse", httplib.Timeout(result.Browse, DefaultTimeout))
+	app.Get(result.RelativeURLRoot+"/:id.txt", httplib.Timeout(result.ShowRaw, DefaultTimeout))
+	app.Get(result.RelativeURLRoot+"/:id", httplib.Timeout(result.Show, DefaultTimeout))
+	app.Post(result.RelativeURLRoot+":/id", httplib.Timeout(result.Update, DefaultTimeout))
+	app.Post(result.AbsoluteURLRoot, httplib.Timeout(result.Create, DefaultTimeout))
 
 	fs := filesystem.New(filesystem.Config{
 		Root: http.FS(staticFS),
@@ -256,7 +260,7 @@ func New(config *Config) (*WebServer, error) {
 			return fs(c)
 		})
 	} else {
-		app.Get(result.RelativeURLRoot+"/*", httplib.Timeout(fs, 10*time.Second))
+		app.Get(result.RelativeURLRoot+"/*", httplib.Timeout(fs, DefaultTimeout))
 	}
 
 	app.Use(httplib.NotFoundHandler)
@@ -279,59 +283,11 @@ func (ws *WebServer) Index(c *fiber.Ctx) error {
 		"RelativeURLRoot": ws.RelativeURLRoot,
 		"AbsoluteURLRoot": ws.AbsoluteURLRoot,
 		"ActiveMenu":      1,
+		"Action":          "index",
 		"Languages":       monaco.Languages,
 		"Version":         version.Version,
 		"Paste":           model.NewPaste(),
 	}, "layout/layout")
-}
-
-// Show ...
-func (ws *WebServer) Show(c *fiber.Ctx) error {
-	if strings.Index(string(c.Context().UserAgent()), "curl/") == 0 {
-		return ws.ShowRaw(c)
-	}
-
-	idString := c.Params("id")
-	id, err := ws.Hasher.Decode(idString)
-	if err != nil {
-		// Mask error - we don't want to expose hasher.Decode errors
-		logger.Error("%s", err)
-		return httplib.NotFoundHandler(c)
-	}
-
-	paste, err := ws.DB.GetPasteByID(id)
-	if err != nil {
-		return err
-	}
-
-	return c.Render("paste/page", fiber.Map{
-		"RelativeURLRoot": ws.RelativeURLRoot,
-		"AbsoluteURLRoot": ws.AbsoluteURLRoot,
-		"ActiveMenu":      2,
-		"Languages":       monaco.Languages,
-		"Version":         version.Version,
-		"Paste":           paste,
-	}, "layout/layout")
-}
-
-// ShowRaw ...
-func (ws *WebServer) ShowRaw(c *fiber.Ctx) error {
-	idString := c.Params("id")
-	id, err := ws.Hasher.Decode(idString)
-	if err != nil {
-		// Mask error - we don't want to expose hasher.Decode errors
-		logger.Error("%s", err)
-		return httplib.NotFoundHandler(c)
-	}
-
-	paste, err := ws.DB.GetPasteByID(id)
-	if err != nil {
-		return err
-	}
-
-	c.Response().Header.Set("X-Filename", paste.Filename)
-	c.Response().Header.Set("X-Filetype", paste.Filetype)
-	return c.SendString(paste.Content)
 }
 
 // Browse ...
@@ -407,6 +363,7 @@ func (ws *WebServer) Browse(c *fiber.Ctx) error {
 		"RelativeURLRoot": ws.RelativeURLRoot,
 		"AbsoluteURLRoot": ws.AbsoluteURLRoot,
 		"ActiveMenu":      2,
+		"Action":          "browse",
 		"Languages":       monaco.Languages,
 		"Version":         version.Version,
 		"Pastes":          paginatedPasteList.Pastes,
@@ -415,11 +372,83 @@ func (ws *WebServer) Browse(c *fiber.Ctx) error {
 	}, "layout/layout")
 }
 
-// Create ...
-func (ws *WebServer) Create(c *fiber.Ctx) error {
-	paste := model.NewPaste()
+// ShowRaw ...
+func (ws *WebServer) ShowRaw(c *fiber.Ctx) error {
+	idString := c.Params("id")
+	id, err := ws.Hasher.Decode(idString)
+	if err != nil {
+		// Mask error - we don't want to expose hasher.Decode errors
+		logger.Error("%s", err)
+		return httplib.NotFoundHandler(c)
+	}
 
-	contentType := string(c.Request().Header.Peek("ContentType"))
+	paste, err := ws.DB.GetPasteByID(id)
+	if err != nil {
+		return err
+	}
+
+	c.Response().Header.Set("X-Filename", paste.Filename)
+	c.Response().Header.Set("X-Filetype", paste.Filetype)
+	return c.SendString(paste.Content)
+}
+
+// Show ...
+func (ws *WebServer) Show(c *fiber.Ctx) error {
+	if strings.Index(string(c.Context().UserAgent()), "curl/") == 0 {
+		return ws.ShowRaw(c)
+	}
+
+	idString := c.Params("id")
+	id, err := ws.Hasher.Decode(idString)
+	if err != nil {
+		// Mask error - we don't want to expose hasher.Decode errors
+		logger.Error("%s", err)
+		return httplib.NotFoundHandler(c)
+	}
+
+	paste, err := ws.DB.GetPasteByID(id)
+	if err != nil {
+		return err
+	}
+
+	action := "show"
+	secret := c.Query("secret")
+	if secret != "" && secret == paste.Secret {
+		action = "edit"
+	}
+
+	return c.Render("paste/page", fiber.Map{
+		"RelativeURLRoot": ws.RelativeURLRoot,
+		"AbsoluteURLRoot": ws.AbsoluteURLRoot,
+		"ActiveMenu":      2,
+		"Action":          action,
+		"Languages":       monaco.Languages,
+		"Version":         version.Version,
+		"Paste":           paste,
+	}, "layout/layout")
+}
+
+// Update ...
+func (ws *WebServer) Update(c *fiber.Ctx) error {
+	idString := c.Params("id")
+	id, err := ws.Hasher.Decode(idString)
+	if err != nil {
+		// Mask error - we don't want to expose hasher.Decode errors
+		logger.Error("%s", err)
+		return httplib.NotFoundHandler(c)
+	}
+
+	paste, err := ws.DB.GetPasteByID(id)
+	if err != nil {
+		return err
+	}
+
+	secret := c.FormValue("secret")
+	if secret != paste.Secret {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+
+	contentType := string(c.Request().Header.Peek(fiber.HeaderContentType))
 	if strings.Contains(contentType, "json") {
 		err := json.Unmarshal(c.Request().Body(), &paste)
 		if err != nil {
@@ -438,7 +467,81 @@ func (ws *WebServer) Create(c *fiber.Ctx) error {
 			}
 			defer mf.Close()
 
-			content, err := ioutil.ReadAll(mf)
+			content, err := io.ReadAll(mf)
+			if err != nil {
+				return err
+			}
+
+			paste.Content = string(content)
+		} else {
+			paste.Content = c.FormValue("content")
+		}
+
+		if v := c.FormValue("filename"); v != "" {
+			paste.Filename = v
+		}
+
+		paste.Filetype = c.FormValue("filetype")
+		paste.IndentStyle = c.FormValue("indent-style")
+		paste.IndentSize, _ = strconv.Atoi(c.FormValue("indent-size"))
+
+		if c.FormValue("private") == "1" {
+			paste.Private = 1
+		}
+	}
+
+	err = paste.Validate()
+	if err != nil {
+		// Send proper error status
+		c.Status(fiber.StatusUnprocessableEntity)
+		return c.SendString(fmt.Sprintf("%#s", err))
+	}
+
+	paste, err = ws.DB.UpdatePaste(paste)
+	if err != nil {
+		return err
+	}
+
+	if strings.Contains(contentType, "json") {
+		return c.JSON(paste)
+	}
+
+	hash, err := ws.Hasher.Encode(paste.ID)
+	if err != nil {
+		return err
+	}
+
+	if strings.Index(string(c.Context().UserAgent()), "curl/") == 0 {
+		return c.SendString(fmt.Sprintf("%s%s/%s", c.BaseURL(), ws.RelativeURLRoot, hash))
+	}
+
+	return c.Redirect(fmt.Sprintf("%s/%s", ws.RelativeURLRoot, hash), fiber.StatusFound)
+}
+
+// Create ...
+func (ws *WebServer) Create(c *fiber.Ctx) error {
+	paste := model.NewPaste()
+
+	contentType := string(c.Request().Header.Peek(fiber.HeaderContentType))
+	if strings.Contains(contentType, "json") {
+		err := json.Unmarshal(c.Request().Body(), &paste)
+		if err != nil {
+			// Mask error - we don't want to expose json.Unmarshal errors
+			logger.Error("%s", err)
+			return c.SendStatus(fiber.StatusBadRequest)
+		}
+	} else {
+		f, _ := c.FormFile("f")
+		if f != nil {
+			paste.Filename = f.Filename
+
+			mf, err := f.Open()
+			if err != nil {
+				return err
+			}
+			defer mf.Close()
+
+			content, err := io.ReadAll(mf)
 			if err != nil {
 				return err
 			}
@@ -486,7 +589,7 @@ func (ws *WebServer) Create(c *fiber.Ctx) error {
 		return c.SendString(c.BaseURL() + ws.RelativeURLRoot + fmt.Sprintf("/%s\n", hash))
 	}
 
-	return c.Redirect(ws.RelativeURLRoot+fmt.Sprintf("/%s", hash), fiber.StatusFound)
+	return c.Redirect(fmt.Sprintf("%s/%s", ws.RelativeURLRoot, hash), fiber.StatusFound)
 }
 
 // Serve ...

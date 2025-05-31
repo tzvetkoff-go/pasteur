@@ -9,18 +9,21 @@ import (
 
 	"github.com/tzvetkoff-go/pasteur/pkg/indentdb"
 	"github.com/tzvetkoff-go/pasteur/pkg/monaco"
+	"github.com/tzvetkoff-go/pasteur/pkg/stringutil"
 )
 
 // Paste ...
 type Paste struct {
 	ID          int       `json:"-"`
-	Private     int       `json:"-"`
+	Secret      string    `json:"-"`
+	Private     int       `json:"private"`
 	Filename    string    `json:"filename"`
 	Filetype    string    `json:"filetype"`
 	IndentStyle string    `json:"indent-style"`
 	IndentSize  int       `json:"indent-size"`
 	Content     string    `json:"content"`
 	CreatedAt   time.Time `json:"created-at"`
+	UpdatedAt   time.Time `json:"updated-at"`
 }
 
 // PasteList ...
@@ -36,6 +39,7 @@ type PaginatedPasteList struct {
 func NewPaste() *Paste {
 	return &Paste{
 		ID:          0,
+		Secret:      "",
 		Private:     0,
 		Filename:    "",
 		Filetype:    "",
@@ -43,11 +47,20 @@ func NewPaste() *Paste {
 		IndentSize:  0,
 		Content:     "",
 		CreatedAt:   time.Time{},
+		UpdatedAt:   time.Time{},
 	}
 }
 
 // Validate ...
 func (p *Paste) Validate() error {
+	//
+	// Generate secret ...
+	//
+
+	if p.Secret == "" {
+		p.Secret = stringutil.RandString(32, "")
+	}
+
 	//
 	// Guess filetype ...
 	//

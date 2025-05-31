@@ -1,6 +1,7 @@
 package stringutil
 
 import (
+	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
@@ -53,6 +54,26 @@ func FormatQuery(s string) string {
 	}
 
 	return result
+}
+
+// RandAlphabet ...
+const RandAlphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+// RandString ...
+func RandString(length int, alphabet string) string {
+	if alphabet == "" {
+		alphabet = RandAlphabet
+	}
+
+	alphabetRunes := []rune(alphabet)
+	alphabetLen := len(alphabetRunes)
+
+	result := make([]rune, length)
+	for i := range result {
+		result[i] = alphabetRunes[rand.Intn(alphabetLen)]
+	}
+
+	return string(result)
 }
 
 // ParseInt ...

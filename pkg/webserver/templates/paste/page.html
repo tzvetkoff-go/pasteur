@@ -3,20 +3,22 @@
     <form method="POST" action="{{ .AbsoluteURLRoot }}">
       <div class="control">
         <label for="filename">Filename:</label>
-        <input type="text" id="filename" name="filename" placeholder="filename.ext" value="{{ .Paste.Filename }}"{{ if ne .Paste.ID 0 }} readonly="readonly"{{ end }} />
+        <input type="text" id="filename" name="filename" placeholder="filename.ext" value="{{ .Paste.Filename }}"{{ if eq .Action "show" }} readonly="readonly"{{ end }} />
       </div>
 
       <div class="control">
         <label for="private">Private:</label>
-        <select itemid="private" name="private"{{ if ne .Paste.ID 0 }} disabled="disabled"{{ end }}>
+        <select itemid="private" name="private"{{ if eq .Action "show" }} disabled="disabled"{{ end }}>
           <option value=""{{ if eq .Paste.Private 0 }} selected="selected"{{ end }}>No</option>
           <option value="1"{{ if eq .Paste.Private 1 }} selected="selected"{{ end }}>Yes</option>
         </select>
       </div>
 
+      <br />
+
       <div class="control">
         <label for="filetype">Filetype:</label>
-        <select id="filetype" name="filetype"{{ if ne .Paste.ID 0 }} disabled="disabled"{{ end }}>
+        <select id="filetype" name="filetype"{{ if eq .Action "show" }} disabled="disabled"{{ end }}>
           <option value="">Auto</option>
           {{- range $language := .Languages }}
           <option value="{{ $language.ID }}"{{ if eq $language.ID $.Paste.Filetype }} selected="selected"{{ end }}>{{ $language.Name }}</option>
@@ -26,11 +28,11 @@
 
       <div class="control">
         <label for="indent-style">Indentation:</label>
-        <select id="indent-style" name="indent-style" class="indent-style-select"{{ if ne .Paste.ID 0 }} disabled="disabled"{{ end }}>
+        <select id="indent-style" name="indent-style" class="indent-style-select"{{ if eq .Action "show" }} disabled="disabled"{{ end }}>
           <option value="spaces"{{ if eq .Paste.IndentStyle "spaces" "" }} selected="selected"{{ end }}>Spaces</option>
           <option value="tabs"{{ if eq .Paste.IndentStyle "tabs" }} selected="selected"{{ end }}>Tabs</option>
         </select>
-        <select id="indent-size" name="indent-size" class="indent-size-select"{{ if ne .Paste.ID 0 }} disabled="disabled"{{ end }}>
+        <select id="indent-size" name="indent-size" class="indent-size-select"{{ if eq .Action "show" }} disabled="disabled"{{ end }}>
           <option value="1"{{ if eq .Paste.IndentSize 1 }} selected="selected"{{ end }}>1</option>
           <option value="2"{{ if eq .Paste.IndentSize 2 }} selected="selected"{{ end }}>2</option>
           <option value="3"{{ if eq .Paste.IndentSize 3 }} selected="selected"{{ end }}>3</option>
@@ -42,18 +44,28 @@
         </select>
       </div>
 
+      {{- if eq .Action "edit" }}
+      <input type="hidden" name="secret" value="{{ .Paste.Secret }}" />
+      {{- end }}
+
       <div class="code">
-        <textarea id="content" name="content" data-language="{{ .Paste.Filetype }}"{{ if ne .Paste.ID 0 }} readonly="readonly"{{ end }}>{{ .Paste.Content }}</textarea>
+        {{- if eq .Action "show" }}
+        <div id="paste-controls">
+          <button type="button" id="clone-paste">Clone</button>
+        </div>
+        {{- end }}
+        <textarea id="content" name="content" data-language="{{ .Paste.Filetype }}"{{ if eq .Action "show" }} readonly="readonly"{{ end }}>{{ .Paste.Content }}</textarea>
       </div>
 
       <div class="control">
-        {{- if ne .Paste.ID 0 }}
-        <button type="button" id="clone-paste">Clone</button>
-        <button type="submit" id="submit-paste" style="display: none;">Paste!</button>
+        {{- if eq .Action "index" }}
+        <button type="submit" id="submit-paste">Paste</button>
+        {{- else if eq .Action "edit" }}
+        <button type="submit" id="submit-paste">Update</button>
         {{- else }}
-        <button type="submit" id="submit-paste">Paste!</button>
+        <button type="submit" id="submit-paste" style="display: none;">Paste</button>
         {{- end }}
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
 </article>

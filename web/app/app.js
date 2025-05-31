@@ -193,11 +193,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  // Paste controls
+  const pasteControls = document.getElementById('paste-controls');
+
   // Clone paste
   const clonePasteButton = document.getElementById('clone-paste');
   if (clonePasteButton !== null) {
     clonePasteButton.onclick = () => {
-      clonePasteButton.style.display = 'none';
+      pasteControls.style.display = 'none';
       submitPasteButton.style.display = 'inline-block';
       jquery('select').prop('disabled', false);
       monacoEditor.updateOptions({

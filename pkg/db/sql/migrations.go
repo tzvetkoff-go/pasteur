@@ -12,13 +12,15 @@ var Migrations = []Migration{
 			_, err := sql.Exec(stringutil.FormatQuery(`
 				CREATE TABLE pastes (
 					id           INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+					secret       VARCHAR(255) NOT NULL,
 					private      TINYINT NOT NULL,
 					filename     VARCHAR(255) NOT NULL,
 					filetype     VARCHAR(255) NOT NULL,
 					indent_style VARCHAR(255) NOT NULL,
 					indent_size  INTEGER NOT NULL,
 					content      TEXT NOT NULL,
-					created_at   DATETIME NOT NULL
+					created_at   DATETIME NOT NULL,
+					updated_at   DATETIME NOT NULL
 				);
 			`))
 			if err != nil {
@@ -32,16 +34,20 @@ var Migrations = []Migration{
 				return err
 			}
 
+			helloSecret := stringutil.RandString(32, "")
+
 			_, err = sql.Exec(stringutil.FormatQuery(`
 				INSERT INTO pastes (
-					private, filename, filetype, indent_style, indent_size, content, created_at
+					secret, private, filename, filetype, indent_style, indent_size, content, created_at, updated_at
 				) VALUES (
 					1,
+					'` + helloSecret + `',
 					'hello-world.txt',
 					'plain',
 					'spaces',
 					4,
 					'Hello, world!',
+					'1987-01-07 10:45:00.000',
 					'1987-01-07 10:45:00.000'
 				);
 			`))

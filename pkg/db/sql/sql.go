@@ -172,15 +172,19 @@ func (sql *SQL) Query(q string, args ...interface{}) (*dbSql.Rows, error) {
 
 // CreatePasteQuery ...
 var CreatePasteQuery = stringutil.FormatQuery(`
-	INSERT INTO pastes (private, filename, filetype, indent_style, indent_size, content, created_at)
-				VALUES (?, ?, ?, ?, ?, ?, ?)
+	INSERT INTO pastes (secret, private, filename, filetype, indent_style, indent_size, content, created_at, updated_at)
+	            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 `)
 
 // CreatePaste ...
 func (sql *SQL) CreatePaste(paste *model.Paste) (*model.Paste, error) {
-	paste.CreatedAt = time.Now()
+	now := time.Now()
+	paste.CreatedAt = now
+	paste.UpdatedAt = now
+
 	result, err := sql.Exec(
 		CreatePasteQuery,
+		paste.Secret,
 		paste.Private,
 		paste.Filename,
 		paste.Filetype,
@@ -188,6 +192,7 @@ func (sql *SQL) CreatePaste(paste *model.Paste) (*model.Paste, error) {
 		paste.IndentSize,
 		paste.Content,
 		paste.CreatedAt,
+		paste.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -203,9 +208,42 @@ func (sql *SQL) CreatePaste(paste *model.Paste) (*model.Paste, error) {
 	return paste, nil
 }
 
+// UpdatePasteQuery ...
+var UpdatePasteQuery = stringutil.FormatQuery(`
+	UPDATE pastes
+	   SET private = ?,
+	       filename = ?,
+	       filetype = ?,
+	       indent_style = ?,
+	       indent_size = ?,
+		   updated_at = ?
+	 WHERE id = ?
+`)
+
+// UpdatePaste ...
+func (sql *SQL) UpdatePaste(paste *model.Paste) (*model.Paste, error) {
+	paste.UpdatedAt = time.Now()
+
+	_, err := sql.Exec(
+		UpdatePasteQuery,
+		paste.Private,
+		paste.Filename,
+		paste.Filetype,
+		paste.IndentStyle,
+		paste.IndentSize,
+		paste.UpdatedAt,
+		paste.ID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return paste, nil
+}
+
 // GetPasteByIDQuery ...
 var GetPasteByIDQuery = stringutil.FormatQuery(`
-	SELECT id, private, indent_style, indent_size, filename, filetype, content, created_at
+	SELECT id, secret, private, indent_style, indent_size, filename, filetype, content, created_at, updated_at
 	  FROM pastes
 	 WHERE id = ?
 `)
@@ -220,6 +258,7 @@ func (sql *SQL) GetPasteByID(id int) (*model.Paste, error) {
 	paste := &model.Paste{}
 	err = row.Scan(
 		&paste.ID,
+		&paste.Secret,
 		&paste.Private,
 		&paste.IndentStyle,
 		&paste.IndentSize,
@@ -227,6 +266,7 @@ func (sql *SQL) GetPasteByID(id int) (*model.Paste, error) {
 		&paste.Filetype,
 		&paste.Content,
 		&paste.CreatedAt,
+		&paste.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -243,7 +283,7 @@ var CountPastesQuery = stringutil.FormatQuery(`
 
 // ListPastesQuery ...
 var ListPastesQuery = stringutil.FormatQuery(`
-	SELECT id, private, indent_style, indent_size, filename, filetype, content, created_at
+	SELECT id, secret, private, indent_style, indent_size, filename, filetype, content, created_at, updated_at
 	  FROM pastes
 `)
 
@@ -327,6 +367,7 @@ func (sql *SQL) PaginatePastes( // revive:disable-line:function-result-limit
 		paste := &model.Paste{}
 		err = rows.Scan(
 			&paste.ID,
+			&paste.Secret,
 			&paste.Private,
 			&paste.IndentStyle,
 			&paste.IndentSize,
@@ -334,6 +375,7 @@ func (sql *SQL) PaginatePastes( // revive:disable-line:function-result-limit
 			&paste.Filetype,
 			&paste.Content,
 			&paste.CreatedAt,
+			&paste.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err
