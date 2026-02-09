@@ -10,13 +10,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/tzvetkoff-go/logger"
 )
 
 // ErrorRecoverer ...
-func ErrorRecoverer() func(*fiber.Ctx) error {
-	fn := func(c *fiber.Ctx) error {
+func ErrorRecoverer() func(fiber.Ctx) error {
+	fn := func(c fiber.Ctx) error {
 		var err error
 
 		defer func() {
@@ -47,7 +47,7 @@ func ErrorRecoverer() func(*fiber.Ctx) error {
 }
 
 // RequestId ...
-func RequestId() func(*fiber.Ctx) error {
+func RequestId() func(fiber.Ctx) error {
 	hostname, err := os.Hostname()
 	if hostname == "" || err != nil {
 		hostname = "localhost"
@@ -65,7 +65,7 @@ func RequestId() func(*fiber.Ctx) error {
 	prefix := fmt.Sprintf("%s/%s", hostname, b64[0:8])
 	var seq uint64
 
-	fn := func(c *fiber.Ctx) error {
+	fn := func(c fiber.Ctx) error {
 		requestId := string(c.Request().Header.Peek("X-Request-Id"))
 		if requestId == "" {
 			atomic.AddUint64(&seq, 1)
@@ -81,14 +81,14 @@ func RequestId() func(*fiber.Ctx) error {
 }
 
 // RequestLogger ...
-func RequestLogger() func(*fiber.Ctx) error {
+func RequestLogger() func(fiber.Ctx) error {
 	// debugFlag := (logger.GetLevel() & logger.LOG_DEBUG) == logger.LOG_DEBUG
 
-	fn := func(c *fiber.Ctx) error {
+	fn := func(c fiber.Ctx) error {
 		fields := logger.Fields{}
 
 		fields["scheme"] = "http"
-		if c.Context().IsTLS() {
+		if c.RequestCtx().IsTLS() {
 			fields["scheme"] = "https"
 		}
 
@@ -137,7 +137,7 @@ func RequestLogger() func(*fiber.Ctx) error {
 
 // Timeout ...
 func Timeout(handler fiber.Handler, timeout time.Duration) fiber.Handler {
-	fn := func(ctx *fiber.Ctx) error {
+	fn := func(ctx fiber.Ctx) error {
 		var err error
 		ch := make(chan struct{}, 1)
 

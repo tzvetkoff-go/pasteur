@@ -4,22 +4,22 @@ import (
 	"database/sql"
 	"os"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/tzvetkoff-go/logger"
 )
 
 // NotFoundHandler ...
-func NotFoundHandler(c *fiber.Ctx) error {
+func NotFoundHandler(c fiber.Ctx) error {
 	return c.SendStatus(404)
 }
 
 // ErrorHandler ...
-func ErrorHandler(c *fiber.Ctx, err error) error {
+func ErrorHandler(c fiber.Ctx, err error) error {
 	if err == sql.ErrNoRows {
 		return NotFoundHandler(c)
 	}
 
-	if err, ok := err.(error); ok && os.IsNotExist(err) {
+	if os.IsNotExist(err) {
 		return NotFoundHandler(c)
 	}
 
@@ -36,9 +36,9 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
 }
 
 // Redirect ...
-func Redirect(path string) fiber.Handler {
-	fn := func(ctx *fiber.Ctx) error {
-		return ctx.Redirect(path)
+func Redirect(path string, code int) fiber.Handler {
+	fn := func(c fiber.Ctx) error {
+		return c.Redirect().Status(code).To(path)
 	}
 
 	return fn

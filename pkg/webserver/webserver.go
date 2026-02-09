@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/filesystem"
-	"github.com/gofiber/template/html/v2"
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/static"
+	"github.com/gofiber/template/html/v3"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/tzvetkoff-go/errors"
@@ -229,10 +229,9 @@ func New(config *Config) (*WebServer, error) {
 	result.Views = viewsEngine
 
 	app := fiber.New(fiber.Config{
-		DisableStartupMessage: true,
-		Views:                 viewsEngine,
-		ErrorHandler:          httplib.ErrorHandler,
-		ProxyHeader:           config.ProxyHeader,
+		Views:        viewsEngine,
+		ErrorHandler: httplib.ErrorHandler,
+		ProxyHeader:  config.ProxyHeader,
 	})
 
 	app.Use(httplib.RequestId())
@@ -240,7 +239,7 @@ func New(config *Config) (*WebServer, error) {
 	app.Use(httplib.ErrorRecoverer())
 
 	if result.RelativeURLRoot != "" {
-		app.Get("/", httplib.Redirect(result.RelativeURLRoot))
+		app.Get("/", httplib.Redirect(result.RelativeURLRoot, fiber.StatusFound))
 	}
 
 	app.Get(result.RelativeURLRoot, httplib.Timeout(result.Index, DefaultTimeout))
@@ -250,13 +249,12 @@ func New(config *Config) (*WebServer, error) {
 	app.Post(result.RelativeURLRoot+":/id", httplib.Timeout(result.Update, DefaultTimeout))
 	app.Post(result.AbsoluteURLRoot, httplib.Timeout(result.Create, DefaultTimeout))
 
-	fs := filesystem.New(filesystem.Config{
-		Root: http.FS(staticFS),
+	fs := static.New(".", static.Config{
+		FS: staticFS,
 	})
 
 	if result.RelativeURLRoot != "" {
-		app.Get(result.RelativeURLRoot+"/*", func(c *fiber.Ctx) error {
-			c.Path(strings.TrimPrefix(c.Path(), result.RelativeURLRoot))
+		app.Get(result.RelativeURLRoot+"/*", func(c fiber.Ctx) error {
 			return fs(c)
 		})
 	} else {
@@ -271,8 +269,8 @@ func New(config *Config) (*WebServer, error) {
 }
 
 // Index ...
-func (ws *WebServer) Index(c *fiber.Ctx) error {
-	if strings.Index(string(c.Context().UserAgent()), "curl/") == 0 {
+func (ws *WebServer) Index(c fiber.Ctx) error {
+	if strings.Index(string(c.RequestCtx().UserAgent()), "curl/") == 0 {
 		s := APIDoc
 		s = strings.ReplaceAll(s, "{{root}}", c.BaseURL()+ws.RelativeURLRoot)
 		s = strings.ReplaceAll(s, "{{id}}", ws.Hasher.EncodeAtomic(1))
@@ -291,7 +289,7 @@ func (ws *WebServer) Index(c *fiber.Ctx) error {
 }
 
 // Browse ...
-func (ws *WebServer) Browse(c *fiber.Ctx) error {
+func (ws *WebServer) Browse(c fiber.Ctx) error {
 	conditions := map[string]interface{}{
 		"private": 0,
 	}
@@ -323,7 +321,7 @@ func (ws *WebServer) Browse(c *fiber.Ctx) error {
 		return err
 	}
 
-	if strings.Index(string(c.Context().UserAgent()), "curl/") == 0 {
+	if strings.Index(string(c.RequestCtx().UserAgent()), "curl/") == 0 {
 		t := table.NewWriter()
 		s := table.StyleDefault
 		s.Format.Header = text.FormatDefault
@@ -373,7 +371,7 @@ func (ws *WebServer) Browse(c *fiber.Ctx) error {
 }
 
 // ShowRaw ...
-func (ws *WebServer) ShowRaw(c *fiber.Ctx) error {
+func (ws *WebServer) ShowRaw(c fiber.Ctx) error {
 	idString := c.Params("id")
 	id, err := ws.Hasher.Decode(idString)
 	if err != nil {
@@ -393,8 +391,8 @@ func (ws *WebServer) ShowRaw(c *fiber.Ctx) error {
 }
 
 // Show ...
-func (ws *WebServer) Show(c *fiber.Ctx) error {
-	if strings.Index(string(c.Context().UserAgent()), "curl/") == 0 {
+func (ws *WebServer) Show(c fiber.Ctx) error {
+	if strings.Index(string(c.RequestCtx().UserAgent()), "curl/") == 0 {
 		return ws.ShowRaw(c)
 	}
 
@@ -429,7 +427,7 @@ func (ws *WebServer) Show(c *fiber.Ctx) error {
 }
 
 // Update ...
-func (ws *WebServer) Update(c *fiber.Ctx) error {
+func (ws *WebServer) Update(c fiber.Ctx) error {
 	idString := c.Params("id")
 	id, err := ws.Hasher.Decode(idString)
 	if err != nil {
@@ -511,15 +509,15 @@ func (ws *WebServer) Update(c *fiber.Ctx) error {
 		return err
 	}
 
-	if strings.Index(string(c.Context().UserAgent()), "curl/") == 0 {
+	if strings.Index(string(c.RequestCtx().UserAgent()), "curl/") == 0 {
 		return c.SendString(fmt.Sprintf("%s%s/%s", c.BaseURL(), ws.RelativeURLRoot, hash))
 	}
 
-	return c.Redirect(fmt.Sprintf("%s/%s", ws.RelativeURLRoot, hash), fiber.StatusFound)
+	return c.Redirect().Status(fiber.StatusFound).To(fmt.Sprintf("%s/%s", ws.RelativeURLRoot, hash))
 }
 
 // Create ...
-func (ws *WebServer) Create(c *fiber.Ctx) error {
+func (ws *WebServer) Create(c fiber.Ctx) error {
 	paste := model.NewPaste()
 
 	contentType := string(c.Request().Header.Peek(fiber.HeaderContentType))
@@ -585,20 +583,24 @@ func (ws *WebServer) Create(c *fiber.Ctx) error {
 		return err
 	}
 
-	if strings.Index(string(c.Context().UserAgent()), "curl/") == 0 {
+	if strings.Index(string(c.RequestCtx().UserAgent()), "curl/") == 0 {
 		return c.SendString(c.BaseURL() + ws.RelativeURLRoot + fmt.Sprintf("/%s\n", hash))
 	}
 
-	return c.Redirect(fmt.Sprintf("%s/%s", ws.RelativeURLRoot, hash), fiber.StatusFound)
+	return c.Redirect().Status(fiber.StatusFound).To(fmt.Sprintf("%s/%s", ws.RelativeURLRoot, hash))
 }
 
 // Serve ...
 func (ws *WebServer) Serve() error {
+	listenConfig := fiber.ListenConfig{
+		DisableStartupMessage: true,
+	}
+
 	if ws.TLSCert != "" && ws.TLSKey != "" {
-		logger.Info("Starting TLS web server at %s", ws.ListenAddress)
-		return ws.App.ListenTLS(ws.ListenAddress, ws.TLSCert, ws.TLSKey)
+		listenConfig.CertFile = ws.TLSCert
+		listenConfig.CertKeyFile = ws.TLSKey
 	}
 
 	logger.Info("Starting web server at %s", ws.ListenAddress)
-	return ws.App.Listen(ws.ListenAddress)
+	return ws.App.Listen(ws.ListenAddress, listenConfig)
 }
