@@ -9,7 +9,7 @@
   "author": "Latchezar Tzvetkoff <latchezar@tzvetkoff.net>",
   "license": "MIT",
   "dependencies": {
-    "jquery": "^3.7.1",
+    "jquery": "^4.0.0",
     "monaco-editor": "^0.55.1",
     "select2": "^4.1.0-rc.0"
   },
