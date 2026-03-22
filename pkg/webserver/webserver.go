@@ -120,11 +120,11 @@ const DefaultTimeout = 10 * time.Second
 // New ...
 func New(config *Config) (*WebServer, error) {
 	result := &WebServer{
-		ListenAddress:   config.ListenAddress,
-		TLSCert:         config.TLSCert,
-		TLSKey:          config.TLSKey,
-		RelativeURLRoot: strings.TrimRight(config.RelativeURLRoot, "/"),
-		AbsoluteURLRoot: strings.TrimRight(config.RelativeURLRoot, "/"),
+		ListenAddress:   config.Listen.Address,
+		TLSCert:         config.Listen.TLSCert,
+		TLSKey:          config.Listen.TLSKey,
+		RelativeURLRoot: strings.TrimRight(config.Assets.RelativeURLRoot, "/"),
+		AbsoluteURLRoot: strings.TrimRight(config.Assets.RelativeURLRoot, "/"),
 	}
 
 	if result.AbsoluteURLRoot == "" {
@@ -134,18 +134,18 @@ func New(config *Config) (*WebServer, error) {
 	var err error
 
 	var staticFS fs.FS
-	if config.StaticPath == "embedded" {
+	if config.Assets.StaticPath == "embedded" {
 		staticFS, err = fs.Sub(StaticFSRoot, "static")
 		if err != nil {
 			return nil, errors.Propagate(err, "cannot access embedded static/ subdirectory")
 		}
 	} else {
-		staticFS = os.DirFS(config.StaticPath)
+		staticFS = os.DirFS(config.Assets.StaticPath)
 	}
 
 	var viewsEngine *html.Engine
 
-	if config.TemplatesPath == "embedded" {
+	if config.Assets.TemplatesPath == "embedded" {
 		templatesFS, err := fs.Sub(TemplatesFSRoot, "templates")
 		if err != nil {
 			return nil, errors.Propagate(err, "cannot access embedded templates/ directory")
@@ -153,7 +153,7 @@ func New(config *Config) (*WebServer, error) {
 
 		viewsEngine = html.NewFileSystem(http.FS(templatesFS), ".html")
 	} else {
-		viewsEngine = html.New(config.TemplatesPath, ".html")
+		viewsEngine = html.New(config.Assets.TemplatesPath, ".html")
 	}
 
 	debugFlag := (logger.GetLevel() & logger.LOG_DEBUG) == logger.LOG_DEBUG
@@ -231,7 +231,15 @@ func New(config *Config) (*WebServer, error) {
 	app := fiber.New(fiber.Config{
 		Views:        viewsEngine,
 		ErrorHandler: httplib.ErrorHandler,
-		ProxyHeader:  config.ProxyHeader,
+		TrustProxy:   config.Proxy.Enabled,
+		ProxyHeader:  config.Proxy.IPHeader,
+		TrustProxyConfig: fiber.TrustProxyConfig{
+			Loopback:   config.Proxy.Loopback,
+			LinkLocal:  config.Proxy.LinkLocal,
+			Private:    config.Proxy.Private,
+			UnixSocket: config.Proxy.UnixSocket,
+			Proxies:    config.Proxy.TrustedIPs,
+		},
 	})
 
 	app.Use(httplib.RequestId())
