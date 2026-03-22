@@ -86,7 +86,7 @@ webserver:
     # Listen address.
     #
     # Value: host:port
-    listen-address: 0.0.0.0:1337
+    address: 0.0.0.0:1337
 
     # TLS certificate.
     #
