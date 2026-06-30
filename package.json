@@ -11,10 +11,10 @@
   "dependencies": {
     "jquery": "^4.0.0",
     "monaco-editor": "^0.55.1",
-    "select2": "^4.1.0-rc.0"
+    "select2": "^4.1.0"
   },
   "devDependencies": {
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.28.1",
     "esbuild-sass-plugin": "^3.7.0",
     "glob": "^13.0.6"
   }
